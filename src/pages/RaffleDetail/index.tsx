@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView, Linking, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView, Linking, Alert, Pressable, Modal } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Feather as Icon, FontAwesome } from '@expo/vector-icons';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
@@ -79,6 +79,9 @@ const RaffleDetail = () => {
     }]);
     const [selectedCotas, setSelectedCotas] = useState<ICotas[]>([]);
 
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedPaidCota, setSelectedPaidCota] = useState<ICotas>({} as ICotas);
+
     useEffect(() => {
         async function getRifa() {
             const response = await api.get(`/rifas/${routeParams.raffle_id}`);
@@ -138,8 +141,36 @@ const RaffleDetail = () => {
         }
     }
 
+    function handleShowBuyer(item: ICotas) {
+        setModalVisible(true);
+        setSelectedPaidCota(item);
+    }
+
     return (
         <SafeAreaView style={styles.container}>
+            <Modal
+                animationType='fade'
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    Alert.alert('Modal has been closed.');
+                    setModalVisible(!modalVisible);
+                }}
+            >
+                <View style={{ flex: 1, justifyContent: 'center' }}>
+                    <View style={styles.modalView}>
+                        <Text style={styles.modalText}>Rifa Comprada</Text>
+                        <Text style={styles.modalText}>Comprador: {selectedPaidCota.id_usuario}</Text>
+                        <Text style={styles.modalText}>Número: {selectedPaidCota.num}</Text>
+                        <Pressable
+                            style={[styles.button, styles.buttonClose]}
+                            onPress={() => setModalVisible(!modalVisible)}
+                        >
+                            <Text style={styles.textStyle}>Fechar</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            </Modal>
             <ScrollView>
                 <View style={styles.detailContainer}>
                     <TouchableOpacity onPress={handleNavigateBack}>
@@ -187,11 +218,15 @@ const RaffleDetail = () => {
                                         </View>
                                     </TouchableOpacity>
                                     :
-                                    <View key={cota.ID} style={styles.item}>
+                                    <TouchableOpacity
+                                        key={cota.ID}
+                                        style={styles.item}
+                                        onPress={() => handleShowBuyer(cota)}
+                                    >
                                         <View style={styles.selectedNumbers}>
                                             <Text style={{ color: '#fff' }}>{cota.num}</Text>
                                         </View>
-                                    </View>
+                                    </TouchableOpacity>
                             ))}
                         </View>
                     </View>
@@ -386,6 +421,37 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+
+    modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+
+    buttonClose: {
+        backgroundColor: '#2196F3',
+    },
+
+    textStyle: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center'
+    },
+
+    modalText: {
+        marginBottom: 15,
+        textAlign: 'center'
+    }
 });
 
 export default RaffleDetail;
