@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, ScrollView, SafeAreaView, TouchableOpacity } fr
 import { FontAwesome5 as Icon } from '@expo/vector-icons';
 import { MaterialIcons as Icon2 } from '@expo/vector-icons';
 import AuthContext from '../../contexts/auth';
+import MyRaffle from '../../components/MyRaffle';
 import Ticket from '../../components/Ticket';
 import api from '../../services/api';
 
@@ -15,9 +16,20 @@ interface ICota {
     status: string;
 }
 
+interface IMinhaRifa {
+    ID: number;
+    titulo: string;
+    status: string;
+    duracao: string;
+    soma: number;
+    contagem: number;
+}
+
 const MyRaffles = () => {
     const { user } = useContext(AuthContext);
     const [cotas, setCotas] = useState<ICota[]>([]);
+    const [minhaRifa, setMinhaRifa] = useState<IMinhaRifa[]>([]);
+
     const [tabsRifas, setTabsRifas] = useState<boolean>(false);
 
     useEffect(() => {
@@ -30,6 +42,16 @@ const MyRaffles = () => {
             }
         }
         getCotas();
+
+        async function getMinhaRifa() {
+            try {
+                const response = await api.get(`/rifas/${user?.id}/my`);
+                setMinhaRifa(response.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        getMinhaRifa();
     }, []);
 
     function handleChangeTabs() {
@@ -71,107 +93,16 @@ const MyRaffles = () => {
                         <View style={{ flex: 2 }}>
                             <Text style={{ color: '#fb5b5a', textAlign: 'center', fontSize: 30, marginVertical: 10 }}>Em Andamento</Text>
                             <ScrollView style={{ flex: 1 }}>
-                                <View style={{ backgroundColor: '#d6d6c2', height: 120, borderRadius: 10, flexDirection: 'row', paddingLeft: 5, marginBottom: 10 }}>
-                                    <View style={{ flex: 3, justifyContent: 'center' }}>
-                                        <Text style={{ fontWeight: 'bold' }}>#0000174 - Rifa da Bicicleta do Doido</Text>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text>Quantidade de Rifas Vendidas:</Text>
-                                            <Text style={{ color: '#ff1a1a' }}>1150</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text>Data de Encerramento:</Text>
-                                            <Text style={{ color: '#ff1a1a' }}>23/02/2021</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text>Situação:</Text>
-                                            <Text style={{ color: '#ff1a1a' }}>Entregue</Text>
-                                        </View>
-                                    </View>
-                                    <View style={{ flex: 2, backgroundColor: '#e0e0d1', justifyContent: 'center', alignItems: 'center' }}>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text style={{ fontWeight: 'bold' }}>Total Arrecadado</Text>
-                                            <Icon2 style={{ fontSize: 20 }} name='attach-money' size={20} color='#00802b' />
-                                        </View>
-                                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#003d99' }}>R$2350,00</Text>
-                                    </View>
-                                </View>
-                                <View style={{ backgroundColor: '#d6d6c2', height: 120, borderRadius: 10, flexDirection: 'row', paddingLeft: 5, marginBottom: 10 }}>
-                                    <View style={{ flex: 3, justifyContent: 'center' }}>
-                                        <Text style={{ fontWeight: 'bold' }}>#0000174 - Rifa da Bicicleta do Doido</Text>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text>Quantidade de Rifas Vendidas:</Text>
-                                            <Text style={{ color: '#ff1a1a' }}>1150</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text>Data de Encerramento:</Text>
-                                            <Text style={{ color: '#ff1a1a' }}>23/02/2021</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text>Situação:</Text>
-                                            <Text style={{ color: '#ff1a1a' }}>Entregue</Text>
-                                        </View>
-                                    </View>
-                                    <View style={{ flex: 2, backgroundColor: '#e0e0d1', justifyContent: 'center', alignItems: 'center' }}>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text style={{ fontWeight: 'bold' }}>Total Arrecadado</Text>
-                                            <Icon2 style={{ fontSize: 20 }} name='attach-money' size={20} color='#00802b' />
-                                        </View>
-                                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#003d99' }}>R$2350,00</Text>
-                                    </View>
-                                </View>
+                                {
+                                    minhaRifa && minhaRifa.map(minha =>
+                                        <MyRaffle num={minha.ID} title={minha.titulo} qtt={minha.contagem} finishDate={minha.duracao} status={minha.status} value={minha.soma} />
+                                    )
+                                }
                             </ScrollView>
                         </View>
                         <View style={{ flex: 2 }}>
                             <Text style={{ color: '#fb5b5a', textAlign: 'center', fontSize: 30, marginVertical: 10 }}>Finalizadas</Text>
                             <ScrollView style={{ flex: 1 }}>
-                                <View style={{ backgroundColor: '#d6d6c2', height: 120, borderRadius: 10, flexDirection: 'row', paddingLeft: 5, marginBottom: 10 }}>
-                                    <View style={{ flex: 3, justifyContent: 'center' }}>
-                                        <Text style={{ fontWeight: 'bold' }}>#0000174 - Rifa da Bicicleta do Doido</Text>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text>Quantidade de Rifas Vendidas:</Text>
-                                            <Text style={{ color: '#ff1a1a' }}>1150</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text>Data de Encerramento:</Text>
-                                            <Text style={{ color: '#ff1a1a' }}>23/02/2021</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text>Situação:</Text>
-                                            <Text style={{ color: '#ff1a1a' }}>Entregue</Text>
-                                        </View>
-                                    </View>
-                                    <View style={{ flex: 2, backgroundColor: '#e0e0d1', justifyContent: 'center', alignItems: 'center' }}>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text style={{ fontWeight: 'bold' }}>Total Arrecadado</Text>
-                                            <Icon2 style={{ fontSize: 20 }} name='attach-money' size={20} color='#00802b' />
-                                        </View>
-                                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#003d99' }}>R$2350,00</Text>
-                                    </View>
-                                </View>
-                                <View style={{ backgroundColor: '#d6d6c2', height: 120, borderRadius: 10, flexDirection: 'row', paddingLeft: 5, marginBottom: 10 }}>
-                                    <View style={{ flex: 3, justifyContent: 'center' }}>
-                                        <Text style={{ fontWeight: 'bold' }}>#0000174 - Rifa da Bicicleta do Doido</Text>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text>Quantidade de Rifas Vendidas:</Text>
-                                            <Text style={{ color: '#ff1a1a' }}>1150</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text>Data de Encerramento:</Text>
-                                            <Text style={{ color: '#ff1a1a' }}>23/02/2021</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text>Situação:</Text>
-                                            <Text style={{ color: '#ff1a1a' }}>Entregue</Text>
-                                        </View>
-                                    </View>
-                                    <View style={{ flex: 2, backgroundColor: '#e0e0d1', justifyContent: 'center', alignItems: 'center' }}>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text style={{ fontWeight: 'bold' }}>Total Arrecadado</Text>
-                                            <Icon2 style={{ fontSize: 20 }} name='attach-money' size={20} color='#00802b' />
-                                        </View>
-                                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#003d99' }}>R$2350,00</Text>
-                                    </View>
-                                </View>
                             </ScrollView>
                         </View>
                     </View>
