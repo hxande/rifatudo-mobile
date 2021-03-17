@@ -108,6 +108,14 @@ const Checkout = () => {
                 total: totalToPay,
             });
         }
+
+        if (paymentMeth === '2') {
+            if (image === String(null)) {
+                Alert.alert('Favor selecionar um comprovante');
+            } else {
+                Alert.alert('Comprovante enviado! Aguarde confirmação do recebimento');
+            }
+        }
     }
 
     const handlePickImage = async () => {

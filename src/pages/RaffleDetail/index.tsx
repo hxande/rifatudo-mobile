@@ -210,7 +210,7 @@ const RaffleDetail = () => {
                                     ?
                                     <TouchableOpacity
                                         key={cota.ID}
-                                        style={[styles.item, selectedCotas.includes(cota) ? styles.selectedItem : {}]}
+                                        style={[+cota.valor === 0 ? { backgroundColor: 'gold' } : {}, styles.item, selectedCotas.includes(cota) ? styles.selectedItem : {}]}
                                         onPress={() => handleSelectCota(cota)}
                                     >
                                         <View style={styles.numbers}>
@@ -233,6 +233,10 @@ const RaffleDetail = () => {
                     {signed ?
                         <>
                             <View style={styles.subtitleContainer}>
+                                <View style={styles.subtitleItemContainer}>
+                                    <Text style={styles.subtitleItemText}>Grátis</Text>
+                                    <View style={{ backgroundColor: 'gold', borderRadius: 10, height: 20, width: 20 }}></View>
+                                </View>
                                 <View style={styles.subtitleItemContainer}>
                                     <Text style={styles.subtitleItemText}>Disponível</Text>
                                     <View style={{ backgroundColor: 'gray', borderRadius: 10, height: 20, width: 20 }}></View>
