@@ -253,7 +253,11 @@ const RaffleDetail = () => {
                                 </View>
                                 <View>
                                     <Text style={{ fontSize: 16, color: '#fb5b5a' }}>Preço:</Text>
-                                    <Text style={{ fontSize: 24, color: '#fb5b5a', fontWeight: 'bold' }}>R${(selectedCotas.length * +cotas[0].valor).toFixed(2)}</Text>
+                                    <Text style={{ fontSize: 24, color: '#fb5b5a', fontWeight: 'bold' }}>
+                                        R${
+                                            selectedCotas.reduce((total, single) => total + +single.valor, 0).toFixed(2)
+                                        }
+                                    </Text>
                                 </View>
                             </View>
                             <TouchableOpacity style={styles.buyButton} onPress={() => handleNavigateToCheckout()}>
@@ -265,7 +269,7 @@ const RaffleDetail = () => {
                         </>
                     }
                 </View>
-                {signed ?
+                {/* {signed ?
                     <View style={styles.footer}>
                         <RectButton style={styles.button} onPress={handleWhatsapp}>
                             <FontAwesome name='whatsapp' size={20} color='#fff' />
@@ -280,7 +284,7 @@ const RaffleDetail = () => {
                     :
                     <>
                     </>
-                }
+                } */}
             </ScrollView>
         </SafeAreaView>
     );

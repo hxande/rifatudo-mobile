@@ -94,15 +94,26 @@ const MyRaffles = () => {
                             <Text style={{ color: '#fb5b5a', textAlign: 'center', fontSize: 30, marginVertical: 10 }}>Em Andamento</Text>
                             <ScrollView style={{ flex: 1 }}>
                                 {
-                                    minhaRifa && minhaRifa.map(minha =>
-                                        <MyRaffle num={minha.ID} title={minha.titulo} qtt={minha.contagem} finishDate={minha.duracao} status={minha.status} value={minha.soma} />
-                                    )
+                                    minhaRifa && minhaRifa.map(minha => {
+                                        return +minha.status < 3 ?
+                                            <MyRaffle key={minha.ID} num={minha.ID} title={minha.titulo} qtt={minha.contagem} finishDate={minha.duracao} status={minha.status} value={minha.soma} />
+                                            :
+                                            <></>
+                                    })
                                 }
                             </ScrollView>
                         </View>
                         <View style={{ flex: 2 }}>
                             <Text style={{ color: '#fb5b5a', textAlign: 'center', fontSize: 30, marginVertical: 10 }}>Finalizadas</Text>
                             <ScrollView style={{ flex: 1 }}>
+                                {
+                                    minhaRifa && minhaRifa.map(minha => {
+                                        return +minha.status > 2 ?
+                                            <MyRaffle key={minha.ID} num={minha.ID} title={minha.titulo} qtt={minha.contagem} finishDate={minha.duracao} status={minha.status} value={minha.soma} />
+                                            :
+                                            <></>
+                                    })
+                                }
                             </ScrollView>
                         </View>
                     </View>

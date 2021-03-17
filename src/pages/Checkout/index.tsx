@@ -1,9 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Alert, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Alert, Dimensions, Image, Clipboard } from 'react-native';
+import { RectButton } from 'react-native-gesture-handler';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Feather as Icon } from '@expo/vector-icons';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Picker } from '@react-native-community/picker';
+// import Clipboard from '@react-native-community/clipboard';
+import * as ImagePicker from 'expo-image-picker';
 import AuthContext from '../../contexts/auth';
 import api from '../../services/api'
 
@@ -67,7 +70,21 @@ const Checkout = () => {
         valor: '',
         status: '',
     }]);
+    const [total, setTotal] = useState<number>(0);
     const [paymentMeth, setPaymentMeth] = useState<string>('0');
+    const [image, setImage] = useState<string>(String(null));
+
+    useEffect(() => {
+        async function pickPhoto() {
+            const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Oops... Precisamos de sua permissão para acessar suas fotos');
+                return;
+            }
+        }
+
+        pickPhoto();
+    }, []);
 
     useEffect(() => {
         async function getRifa() {
@@ -77,6 +94,7 @@ const Checkout = () => {
         }
 
         getRifa();
+        setTotal(+routeParams.cotas.reduce((total, single) => total + +single.valor, 0).toFixed(2));
     }, []);
 
     function handleNavigateBack() {
@@ -85,15 +103,34 @@ const Checkout = () => {
 
     function handleNavigateToPayment() {
         if (paymentMeth === '1') {
-            const total = calculatePrice();
+            const totalToPay = calculatePrice();
             navigation.navigate('Pagamento', {
-                total,
+                total: totalToPay,
             });
         }
     }
 
+    const handlePickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            // base64: true,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.cancelled) {
+            setImage(result.uri);
+        }
+    };
+
     function calculatePrice() {
-        return ((cotas.length * +cotas[0].valor) + ((cotas.length * +cotas[0].valor) * 0.01)).toFixed(2);
+        return (total + (cotas.length * 0.25)).toFixed(2);
+    }
+
+    function handleCopyPix() {
+        Clipboard.setString('32918736kjhsgch2892489720');
+        Alert.alert('Copiado!');
     }
 
     const handlePay = async () => {
@@ -143,17 +180,17 @@ const Checkout = () => {
                                 <Text style={styles.paymentItem}>Quantidade de números:</Text>
                                 <Text style={styles.paymentItem}>{cotas.length}</Text>
                             </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={styles.paymentItem}>Valor Unitário:</Text>
                                 <Text style={styles.paymentItem}>{(+cotas[0].valor).toFixed(2)}</Text>
-                            </View>
+                            </View> */}
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={styles.paymentItem}>Taxa Operacional:</Text>
                                 <Text style={styles.paymentItem}>{(cotas.length * 0.25).toFixed(2)}</Text>
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={styles.paymentItem}>Valor Total:</Text>
-                                <Text style={styles.paymentItem}>{((cotas.length * +cotas[0].valor) + (cotas.length * 0.25)).toFixed(2)}</Text>
+                                <Text style={styles.paymentItem}>{(total + (cotas.length * 0.25)).toFixed(2)}</Text>
                             </View>
                         </View>
                     </View>
@@ -171,6 +208,32 @@ const Checkout = () => {
                             <Picker.Item label='PIX' value='2' />
                         </Picker>
                     </View>
+                    {
+                        paymentMeth === '2' ?
+                            <>
+                                <View style={styles.pixContainer}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center' }}>
+                                        <Text style={styles.pixInfo}>Chave PIX:</Text>
+                                        <Text style={styles.pixInfo}>32918736kjhsgch2892489720</Text>
+                                        <TouchableOpacity style={{ justifyContent: 'center', alignContent: 'center', marginRight: 10 }} onPress={handleCopyPix}>
+                                            <Icon name='copy' size={20} color='#fb5b5a' />
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                                <View style={styles.imageContainer}>
+                                    <RectButton style={styles.imagePicker} onPress={handlePickImage}>
+                                        <Text style={styles.imageText}>Selecione o comprovante</Text>
+                                    </RectButton>
+                                    {image !== String(null)
+                                        ? <Image source={{ uri: image }} style={styles.image} />
+                                        : <View style={styles.imageFake}><Text style={{ fontSize: 16, color: '#fb5b5a' }}>Imagem</Text></View>
+                                    }
+                                </View>
+                            </>
+                            :
+                            <>
+                            </>
+                    }
                     <View style={{ marginTop: 10 }}>
                         <TouchableOpacity style={styles.buyButton} onPress={() => handleNavigateToPayment()}>
                             <Text style={styles.buyButtonText}>Pagar</Text>
@@ -271,6 +334,55 @@ const styles = StyleSheet.create({
         color: '#FFF',
         fontFamily: 'Roboto_500Medium',
         fontSize: 16,
+    },
+
+    imageFake: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 200,
+        height: 200,
+        margin: 15,
+        borderWidth: 1,
+        borderRadius: 10,
+        borderStyle: 'dashed',
+        borderColor: '#fb5b5a',
+    },
+
+    imageContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10,
+    },
+
+    imagePicker: {
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#fb5b5a',
+        padding: 15,
+        overflow: 'hidden',
+    },
+
+    imageText: {
+        textAlign: 'center',
+        fontFamily: 'Roboto_500Medium',
+        fontSize: 18,
+    },
+
+    image: {
+        width: 200,
+        height: 200,
+        margin: 15
+    },
+
+    pixContainer: {
+        backgroundColor: '#fff',
+        width: Dimensions.get('window').width - 64,
+        borderRadius: 10,
+        marginTop: 10,
+    },
+
+    pixInfo: {
+        padding: 8
     },
 });
 
