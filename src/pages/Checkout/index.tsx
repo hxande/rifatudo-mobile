@@ -40,6 +40,14 @@ interface IRifa {
     duracao: string;
 }
 
+interface IPaymentDTO {
+    user: number | undefined;
+    raffle: string;
+    quotas: string;
+    method: number;
+    valor: number;
+}
+
 const Checkout = () => {
     const navigation = useNavigation();
     const { signed, user, logar } = useContext(AuthContext);
@@ -101,7 +109,7 @@ const Checkout = () => {
         navigation.goBack();
     }
 
-    function handleNavigateToPayment() {
+    async function handleNavigateToPayment() {
         if (paymentMeth === '1') {
             const totalToPay = calculatePrice();
             navigation.navigate('Pagamento', {
@@ -113,13 +121,21 @@ const Checkout = () => {
             if (image === String(null)) {
                 Alert.alert('Favor selecionar um comprovante');
             } else {
-                Alert.alert('Comprovante enviado! Aguarde confirmação do recebimento');
+                const data = createDTO();
+                try {
+                    const response = await api.post('/payments/pay', data);
+                    if (response.status === 200) {
+                        Alert.alert('Comprovante enviado! Aguarde confirmação do recebimento');
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
             }
         }
     }
 
     const handlePickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
+        const response = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             // base64: true,
             allowsEditing: true,
@@ -127,13 +143,27 @@ const Checkout = () => {
             quality: 1,
         });
 
-        if (!result.cancelled) {
-            setImage(result.uri);
+        if (!response.cancelled) {
+            setImage(response.uri);
         }
     };
 
     function calculatePrice() {
         return (total + (cotas.length * 0.25)).toFixed(2);
+    }
+
+    function createDTO() {
+        const toStringfy: string[] = [];
+        cotas.forEach(cota => {
+            toStringfy.push(cota.num);
+        });
+        const dto = {} as IPaymentDTO;
+        dto.user = user?.id;
+        dto.raffle = cotas[0].id_rifa;
+        dto.quotas = toStringfy.join(',');
+        dto.method = 2;
+        dto.valor = +calculatePrice();
+        return dto;
     }
 
     function handleCopyPix() {
