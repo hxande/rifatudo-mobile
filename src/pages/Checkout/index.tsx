@@ -105,6 +105,20 @@ const Checkout = () => {
         setTotal(+routeParams.cotas.reduce((total, single) => total + +single.valor, 0).toFixed(2));
     }, []);
 
+    const handlePickImage = async () => {
+        const response = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            // base64: true,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!response.cancelled) {
+            setImage(response.uri);
+        }
+    };
+
     function handleNavigateBack() {
         navigation.goBack();
     }
@@ -123,9 +137,12 @@ const Checkout = () => {
             } else {
                 const data = createDTO();
                 try {
-                    const response = await api.post('/payments/pay', data);
-                    if (response.status === 200) {
-                        Alert.alert('Comprovante enviado! Aguarde confirmação do recebimento');
+                    const responsePending = await api.put(`/raffles/${rifa.ID}/quotas/pending`, data);
+                    if (responsePending.status === 200) {
+                        const response = await api.post('/payments/pay', data);
+                        if (response.status === 200) {
+                            Alert.alert('Comprovante enviado! Aguarde confirmação do recebimento');
+                        }
                     }
                 } catch (error) {
                     console.log(error);
@@ -133,20 +150,6 @@ const Checkout = () => {
             }
         }
     }
-
-    const handlePickImage = async () => {
-        const response = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            // base64: true,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-        if (!response.cancelled) {
-            setImage(response.uri);
-        }
-    };
 
     function calculatePrice() {
         return (total + (cotas.length * 0.25)).toFixed(2);

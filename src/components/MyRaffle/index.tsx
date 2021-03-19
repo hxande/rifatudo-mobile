@@ -27,7 +27,7 @@ const MyRaffle: React.FC<Props> = ({ num, title, qtt, finishDate, status, value 
                 </View>
                 <View style={{ flexDirection: 'row' }}>
                     <Text>Situação:</Text>
-                    <Text style={{ color: '#ff1a1a' }}>{status}</Text>
+                    <Text style={{ color: '#ff1a1a' }}>{+status === 0 ? 'Nova' : 'Ativa'}</Text>
                 </View>
             </View>
             <View style={{ flex: 2, backgroundColor: '#e0e0d1', justifyContent: 'center', alignItems: 'center' }}>
@@ -35,7 +35,7 @@ const MyRaffle: React.FC<Props> = ({ num, title, qtt, finishDate, status, value 
                     <Text style={{ fontWeight: 'bold' }}>Total Arrecadado</Text>
                     <Icon style={{ fontSize: 20 }} name='attach-money' size={20} color='#00802b' />
                 </View>
-                <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#003d99' }}>R${value}</Text>
+                <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#003d99' }}>R${value.toFixed(2)}</Text>
             </View>
         </View>
     );

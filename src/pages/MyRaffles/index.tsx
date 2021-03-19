@@ -122,7 +122,7 @@ const MyRaffles = () => {
                         <ScrollView showsVerticalScrollIndicator={true} pagingEnabled indicatorStyle='white' scrollIndicatorInsets={{ right: 0 }}>
                             {
                                 cotas && cotas.map(cota =>
-                                    <Ticket key={cota.ID} raffle={+cota.id_rifa} num={+cota.num} />
+                                    <Ticket key={cota.ID} raffle={+cota.id_rifa} num={+cota.num} status={+cota.status} value={+cota.valor} />
                                 )
                             }
                         </ScrollView>
