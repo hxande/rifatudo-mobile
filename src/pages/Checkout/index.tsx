@@ -138,6 +138,7 @@ const Checkout = () => {
             } else {
                 const data = createDTO();
                 try {
+                    await uploadToServer(rifa.ID, data.quotas, image);
                     const response = await api.put(`/raffles/${rifa.ID}/quotas/status/1`, data);
                     if (response.status === 200) {
                         const responsePayment = await api.post('/payments/pay', data);
@@ -175,6 +176,34 @@ const Checkout = () => {
         Clipboard.setString('32918736kjhsgch2892489720');
         Alert.alert('Copiado!');
     }
+
+    const uploadToServer = async (id: number, quotas: string, sourceUrl: string) => {
+        const filename = sourceUrl.split('/').pop();
+        const match = /\.(\w+)$/.exec(String(filename));
+        const type = match ? `image/${match[1]}` : `image`;
+
+        const data = new FormData();
+        data.append('name', 'avatar');
+        data.append('image', {
+            uri: sourceUrl,
+            type,
+            name: filename
+        });
+        const config = {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'multipart/form-data',
+            },
+            body: data,
+        };
+
+        fetch(`http://192.168.0.10:3333/raffles/${id}/quotas/${quotas}/receipt`, config)
+            .then((checkStatusAndGetJSONResponse) => {
+                console.log(checkStatusAndGetJSONResponse);
+            })
+            .catch((err) => { console.log(err) });
+    };
 
     return (
         <SafeAreaView style={styles.container}>
