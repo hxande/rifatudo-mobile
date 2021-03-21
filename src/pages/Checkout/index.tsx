@@ -128,6 +128,7 @@ const Checkout = () => {
             const totalToPay = calculatePrice();
             navigation.navigate('Pagamento', {
                 total: totalToPay,
+                cotas,
             });
         }
 
@@ -137,11 +138,12 @@ const Checkout = () => {
             } else {
                 const data = createDTO();
                 try {
-                    const responsePending = await api.put(`/raffles/${rifa.ID}/quotas/pending`, data);
-                    if (responsePending.status === 200) {
-                        const response = await api.post('/payments/pay', data);
-                        if (response.status === 200) {
+                    const response = await api.put(`/raffles/${rifa.ID}/quotas/status/1`, data);
+                    if (response.status === 200) {
+                        const responsePayment = await api.post('/payments/pay', data);
+                        if (responsePayment.status === 200) {
                             Alert.alert('Comprovante enviado! Aguarde confirmação do recebimento');
+                            navigation.navigate('Rifa');
                         }
                     }
                 } catch (error) {
@@ -173,19 +175,6 @@ const Checkout = () => {
         Clipboard.setString('32918736kjhsgch2892489720');
         Alert.alert('Copiado!');
     }
-
-    const handlePay = async () => {
-        await api.post(`/users/${user?.id}/rifas/${rifa.ID}/cotas/comprar`, { data: cotas })
-            .then(response => {
-                if (response.status === 200) {
-                    Alert.alert('Rifa comprada com sucesso!!!');
-                    navigation.navigate('Rifa');
-                }
-            })
-            .catch(err => {
-                console.warn(err);
-            });
-    };
 
     return (
         <SafeAreaView style={styles.container}>
