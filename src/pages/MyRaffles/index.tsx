@@ -30,6 +30,7 @@ const MyRaffles = () => {
     const [cotas, setCotas] = useState<ICota[]>([]);
     const [minhaRifa, setMinhaRifa] = useState<IMinhaRifa[]>([]);
 
+    const [total, setTotal] = useState<number>(0);
     const [tabsRifas, setTabsRifas] = useState<boolean>(false);
 
     useEffect(() => {
@@ -54,6 +55,18 @@ const MyRaffles = () => {
         getMinhaRifa();
     }, []);
 
+    useEffect(() => {
+        async function getTotal() {
+            try {
+                const response = await api.get(`/statements/total/${user?.id}`);
+                setTotal(response.data[0].total);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        getTotal();
+    }, []);
+
     function handleChangeTabs() {
         setTabsRifas(!tabsRifas);
     }
@@ -65,7 +78,7 @@ const MyRaffles = () => {
                 <View style={{ flexDirection: 'row', marginBottom: 10 }}>
                     <Icon style={{ fontSize: 20 }} name='money-bill-wave' size={20} color='#00802b' />
                     <Text style={{ color: 'black', fontSize: 20, marginHorizontal: 10 }}>Saldo:</Text>
-                    <Text style={{ color: 'black', fontSize: 20, fontWeight: '700' }}>R$10,00</Text>
+                    <Text style={{ color: 'black', fontSize: 20, fontWeight: '700' }}>R${total}</Text>
                 </View>
             </View>
             <View style={{ backgroundColor: '#fff', flexDirection: 'row', height: 50, alignItems: 'center' }}>
