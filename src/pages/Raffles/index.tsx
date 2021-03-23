@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ActivityIndicator, Image, View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, TextInput, FlatList } from 'react-native';
+import { ActivityIndicator, Image, View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, TextInput, FlatList, ListRenderItem } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather as Icon } from '@expo/vector-icons';
@@ -51,9 +51,34 @@ const Raffles = () => {
 
     const [sorteioFederal, setSorteioFederal] = useState<ISorteioFederal>({ dataApuracao: '', dezenasSorteadasOrdemSorteio: [] });
 
+    const [page, setPage] = useState<number>(1);
+    const [scrolled, setScrolled] = useState<boolean>(false);
+    const [endData, setEndData] = useState<boolean>(false);
+
+
+    async function getMoreRaffles() {
+        if (!scrolled || endData) {
+            return;
+        }
+
+        console.warn(page);
+
+        const response = await api.get(`/raffles/pages/${page + 1}`);
+        if (response.data.length === 0) {
+            setEndData(true);
+        }
+
+        setPage(page + 1);
+        setRifas([...rifas, ...response.data]);
+    }
+
+    function onScroll() {
+        setScrolled(true);
+    }
+
     useEffect(() => {
         async function getRifas() {
-            const response = await api.get('/rifas');
+            const response = await api.get(`/raffles/pages/${page}`);
             setRifas(response.data);
         }
         getRifas();
@@ -104,6 +129,27 @@ const Raffles = () => {
         });
     }
 
+    const renderItem: ListRenderItem<IRifaCotas> = ({ item }) => (
+        <TouchableOpacity
+            key={item.ID}
+            style={styles.item}
+            onPress={() => handleNavigateToDetail(item.ID)}
+            activeOpacity={0.6}
+        >
+            <Image style={styles.image} source={{ uri: item.image_url }} />
+            <View style={{ marginLeft: 10, justifyContent: 'space-between' }}>
+                <View>
+                    <Text style={styles.itemTitle}>{item.titulo}</Text>
+                    <Text style={styles.itemPrice}>R$ {item.valor}</Text>
+                </View>
+                <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', paddingRight: 30 }}>
+                    <Text style={styles.itemLocation}>{item.cidade}, {item.uf} - 22/10/2020</Text>
+                    <Text style={styles.itemLocation}>{item.qtd_compradas}/{item.qtd_cotas}</Text>
+                </View>
+            </View>
+        </TouchableOpacity>
+    );
+
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
@@ -142,32 +188,16 @@ const Raffles = () => {
                 </View>
             </View>
 
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 10 }}>
-                <View style={styles.itemsContainer}>
-                    {
-                        rifasCotas && rifasCotas.map(rifa =>
-                            <TouchableOpacity
-                                key={rifa.ID}
-                                style={styles.item}
-                                onPress={() => handleNavigateToDetail(rifa.ID)}
-                                activeOpacity={0.6}
-                            >
-                                <Image style={styles.image} source={{ uri: rifa.image_url }} />
-                                <View style={{ marginLeft: 10, justifyContent: 'space-between' }}>
-                                    <View>
-                                        <Text style={styles.itemTitle}>{rifa.titulo}</Text>
-                                        <Text style={styles.itemPrice}>R$ {rifa.valor}</Text>
-                                    </View>
-                                    <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', paddingRight: 30 }}>
-                                        <Text style={styles.itemLocation}>{rifa.cidade}, {rifa.uf} - 22/10/2020</Text>
-                                        <Text style={styles.itemLocation}>{rifa.qtd_compradas}/{rifa.qtd_cotas}</Text>
-                                    </View>
-                                </View>
-                            </TouchableOpacity>
-                        )
-                    }
-                </View>
-            </ScrollView>
+            <View style={styles.itemsContainer}>
+                <FlatList
+                    data={rifasCotas}
+                    renderItem={renderItem}
+                    keyExtractor={item => String(item.ID)}
+                    onScroll={onScroll}
+                    onEndReached={getMoreRaffles}
+                    onEndReachedThreshold={0}
+                />
+            </View>
         </SafeAreaView>
     );
 };
