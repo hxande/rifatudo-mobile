@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, Animated } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, Animated, SafeAreaView, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-community/picker';
@@ -109,6 +109,9 @@ const Register = () => {
     }
 
     return (
+        <SafeAreaView>
+<ScrollView>
+
         <View style={styles.container}>
             <TextInput editable={false} style={styles.header}>Registrar</TextInput>
             <Animated.View style={[getAnimationStyle(), { alignSelf: 'stretch' }]}>
@@ -120,7 +123,7 @@ const Register = () => {
                     value={username}
                     onChangeText={validateEmail}
                     autoCorrect={false}
-                />
+                    />
             </Animated.View>
             {fieldMessage.length > 0 ? <Text style={styles.validateText}>{fieldMessage}</Text> : <></>}
             <TextInput
@@ -130,7 +133,7 @@ const Register = () => {
                 placeholderTextColor='#fff'
                 value={nome}
                 onChangeText={setNome}
-            />
+                />
             <TextInput
                 textContentType='familyName'
                 style={styles.inputText}
@@ -138,14 +141,14 @@ const Register = () => {
                 placeholderTextColor='#fff'
                 value={sobrenome}
                 onChangeText={setSobrenome}
-            />
+                />
             <TextInput
                 style={styles.inputText}
                 placeholder='CPF'
                 placeholderTextColor='#fff'
                 value={cpf}
                 onChangeText={onChangeCPF}
-            />
+                />
             <Text style={styles.dateTitleText}>Data de nascimento</Text>
             <DateTimePicker
                 style={{ width: 165, backgroundColor: '#fff' }}
@@ -156,7 +159,7 @@ const Register = () => {
                 display='default'
                 onChange={onChangeDate}
                 locale='pt-BR'
-            />
+                />
             <TextInput
                 style={{
                     marginBottom: 30,
@@ -166,7 +169,7 @@ const Register = () => {
                     alignSelf: 'stretch',
                 }}
                 editable={false}
-            />
+                />
             <Picker
                 style={{ height: 50, width: Dimensions.get('window').width, marginBottom: 20 }}
                 itemStyle={{ height: 50, width: Dimensions.get('window').width }}
@@ -186,10 +189,10 @@ const Register = () => {
                 placeholderTextColor='#fff'
                 value={password}
                 onChangeText={setPassword}
-            />
+                />
             {
                 fieldMessage.length > 0 ?
-                    <TouchableOpacity style={styles.registerBtn} onPress={triggerAnimation}>
+                <TouchableOpacity style={styles.registerBtn} onPress={triggerAnimation}>
                         <Text style={styles.text}>REGISTRAR</Text>
                     </TouchableOpacity>
                     :
@@ -198,6 +201,8 @@ const Register = () => {
                     </TouchableOpacity>
             }
         </View>
+            </ScrollView>
+            </SafeAreaView>
     );
 };
 
