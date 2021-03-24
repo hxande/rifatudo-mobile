@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, SafeAreaView, TouchableOpacity, Alert, Pressable, Modal, TextInput } from 'react-native';
 import { FontAwesome5 as Icon } from '@expo/vector-icons';
 import { MaterialIcons as Icon2 } from '@expo/vector-icons';
 import AuthContext from '../../contexts/auth';
@@ -32,6 +32,8 @@ const MyRaffles = () => {
 
     const [total, setTotal] = useState<number>(0);
     const [tabsRifas, setTabsRifas] = useState<boolean>(false);
+
+    const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
         async function getCotas() {
@@ -73,8 +75,64 @@ const MyRaffles = () => {
         setTabsRifas(!tabsRifas);
     }
 
+    function handleWithdraw() {
+        setModalVisible(true);
+    }
+
+    function handleConfirm() {
+        Alert.alert(
+            'Saque solicitado!',
+            'Aguarde até 2 dias úteis para confirmação.',
+            [
+                {
+                    text: 'OK',
+                    onPress: () => setModalVisible(!modalVisible),
+                    style: 'default',
+                },
+            ]
+        );
+    }
+
     return (
         <SafeAreaView style={styles.container}>
+            <Modal
+                animationType='fade'
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    Alert.alert('Modal has been closed.');
+                    setModalVisible(!modalVisible);
+                }}
+            >
+                <View style={{ flex: 1, justifyContent: 'center' }}>
+                    <View style={styles.modalView}>
+                        <Text style={styles.modalText}>Informe o valor a ser sacado:</Text>
+                        <TextInput
+                            style={styles.modalInput}
+                            keyboardType='numeric'
+                            placeholder='Valor'
+                            placeholderTextColor='#fff'
+                        // value={total}
+                        // onChangeText={setTotal}
+                        />
+                        <View style={{ flexDirection: 'row' }}>
+                            <Pressable
+                                style={[styles.button, styles.buttonConfirm]}
+                                onPress={handleConfirm}
+                            >
+                                <Text style={styles.textStyle}>Confirmar</Text>
+                            </Pressable>
+                            <Pressable
+                                style={[styles.button, styles.buttonClose]}
+                                onPress={() => setModalVisible(!modalVisible)}
+                            >
+                                <Text style={styles.textStyle}>Fechar</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
             <View style={styles.headerContainer}>
                 <Text style={styles.title}>Minhas Rifas</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
@@ -86,7 +144,10 @@ const MyRaffles = () => {
                         <Text style={{ color: 'black', fontSize: 20, marginHorizontal: 10 }}>Saldo:</Text>
                         <Text style={{ color: 'black', fontSize: 20, fontWeight: '700' }}>R${total}</Text>
                     </View>
-                    <TouchableOpacity style={{ marginRight: 20, backgroundColor: '#fb5b5a', height: 30, width: 100, marginBottom: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center' }}>
+                    <TouchableOpacity
+                        style={{ marginRight: 20, backgroundColor: '#fb5b5a', height: 30, width: 100, marginBottom: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center' }}
+                        onPress={handleWithdraw}
+                    >
                         <Text style={{ color: '#fff' }}>Sacar</Text>
                     </TouchableOpacity>
                 </View>
@@ -188,7 +249,65 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         height: 50,
         backgroundColor: '#fff'
-    }
+    },
+
+    modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+
+    button: {
+        width: '48%',
+        backgroundColor: '#34cb79',
+        borderRadius: 10,
+        height: 50,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    buttonConfirm: {
+        marginRight: 5,
+    },
+
+    buttonClose: {
+        marginLeft: 5,
+        backgroundColor: '#2196F3',
+    },
+
+    textStyle: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+
+    modalText: {
+        marginBottom: 15,
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+
+    modalInput: {
+        marginBottom: 15,
+        textAlign: 'center',
+        backgroundColor: '#66c2ff',
+        width: 200,
+        height: 50,
+        borderRadius: 25,
+        fontSize: 20,
+    },
 });
 
 export default MyRaffles;
