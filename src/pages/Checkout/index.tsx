@@ -12,6 +12,7 @@ import api from '../../services/api'
 
 interface Params {
     cotas: ICotas[];
+    owner: string;
 }
 
 interface ICotas {
@@ -129,6 +130,7 @@ const Checkout = () => {
             navigation.navigate('Pagamento', {
                 total: totalToPay,
                 cotas,
+                owner: routeParams.owner,
             });
         }
 

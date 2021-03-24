@@ -10,6 +10,7 @@ import api from '../../services/api'
 interface Params {
     total: number;
     cotas: ICotas[];
+    owner: string
 }
 
 interface ICotas {
@@ -27,6 +28,7 @@ interface IPaymentDTO {
     quotas: string;
     method: number;
     valor: number;
+    owner: string;
 }
 
 const Payment = () => {
@@ -57,6 +59,7 @@ const Payment = () => {
         dto.quotas = toStringfy.join(',');
         dto.method = 1;
         dto.valor = +vlrPagamento;
+        dto.owner = routeParams.owner;
         return dto;
     }
 

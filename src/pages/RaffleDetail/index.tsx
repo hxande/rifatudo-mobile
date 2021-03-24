@@ -110,7 +110,8 @@ const RaffleDetail = () => {
     function handleNavigateToCheckout() {
         if (signed) {
             navigation.navigate('Checkout', {
-                cotas: selectedCotas
+                cotas: selectedCotas,
+                owner: rifa.id_usuario
             });
         } else {
             Alert.alert('Favor logar antes');

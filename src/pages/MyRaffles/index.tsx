@@ -47,7 +47,9 @@ const MyRaffles = () => {
         async function getMinhaRifa() {
             try {
                 const response = await api.get(`/rifas/${user?.id}/my`);
-                setMinhaRifa(response.data);
+                if (response.data[0].ID !== null) {
+                    setMinhaRifa(response.data);
+                }
             } catch (error) {
                 console.log(error);
             }
@@ -59,7 +61,7 @@ const MyRaffles = () => {
         async function getTotal() {
             try {
                 const response = await api.get(`/statements/total/${user?.id}`);
-                setTotal(response.data[0].total);
+                setTotal(response.data[0].total !== null ? response.data[0].total : 0);
             } catch (error) {
                 console.log(error);
             }
@@ -75,10 +77,18 @@ const MyRaffles = () => {
         <SafeAreaView style={styles.container}>
             <View style={styles.headerContainer}>
                 <Text style={styles.title}>Minhas Rifas</Text>
-                <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-                    <Icon style={{ fontSize: 20 }} name='money-bill-wave' size={20} color='#00802b' />
-                    <Text style={{ color: 'black', fontSize: 20, marginHorizontal: 10 }}>Saldo:</Text>
-                    <Text style={{ color: 'black', fontSize: 20, fontWeight: '700' }}>R${total}</Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <TouchableOpacity style={{ marginLeft: 20, backgroundColor: '#fb5b5a', height: 30, width: 100, marginBottom: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center' }}>
+                        <Text style={{ color: '#fff' }}>Histórico</Text>
+                    </TouchableOpacity>
+                    <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+                        <Icon style={{ fontSize: 20 }} name='money-bill-wave' size={20} color='#00802b' />
+                        <Text style={{ color: 'black', fontSize: 20, marginHorizontal: 10 }}>Saldo:</Text>
+                        <Text style={{ color: 'black', fontSize: 20, fontWeight: '700' }}>R${total}</Text>
+                    </View>
+                    <TouchableOpacity style={{ marginRight: 20, backgroundColor: '#fb5b5a', height: 30, width: 100, marginBottom: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center' }}>
+                        <Text style={{ color: '#fff' }}>Sacar</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
             <View style={{ backgroundColor: '#fff', flexDirection: 'row', height: 50, alignItems: 'center' }}>
