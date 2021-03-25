@@ -25,15 +25,31 @@ interface IMinhaRifa {
     contagem: number;
 }
 
+interface IStatements {
+    ID: number;
+    id_usuario: string;
+    tipo_transacao: string;
+    valor: string;
+    sqltime: string;
+}
+
+interface IWithdrawDTO {
+    owner: number | undefined;
+    valor: number;
+}
+
 const MyRaffles = () => {
     const { user } = useContext(AuthContext);
     const [cotas, setCotas] = useState<ICota[]>([]);
     const [minhaRifa, setMinhaRifa] = useState<IMinhaRifa[]>([]);
+    const [transacoes, setTransacoes] = useState<IStatements[]>([]);
 
     const [total, setTotal] = useState<number>(0);
     const [tabsRifas, setTabsRifas] = useState<boolean>(false);
 
     const [modalVisible, setModalVisible] = useState(false);
+    const [modalVisible2, setModalVisible2] = useState(false);
+    const [withdrawValue, setWithdrawValue] = useState<string>('');
 
     useEffect(() => {
         async function getCotas() {
@@ -71,26 +87,56 @@ const MyRaffles = () => {
         getTotal();
     }, []);
 
+    // useEffect(() => {
+    //     setModalVisible(true);
+    // }, [transacoes]);
+
     function handleChangeTabs() {
         setTabsRifas(!tabsRifas);
     }
 
-    function handleWithdraw() {
-        setModalVisible(true);
+    async function handleHistory() {
+        const response = await api.get('/statements');
+        if (response.status === 200) {
+            setTransacoes(response.data);
+            setModalVisible(true);
+        }
     }
 
-    function handleConfirm() {
-        Alert.alert(
-            'Saque solicitado!',
-            'Aguarde até 2 dias úteis para confirmação.',
-            [
-                {
-                    text: 'OK',
-                    onPress: () => setModalVisible(!modalVisible),
-                    style: 'default',
-                },
-            ]
-        );
+    function handleWithdraw() {
+        if (total <= 0) {
+            Alert.alert('Você não possui saldo!');
+            return;
+        }
+
+        setModalVisible2(true);
+    }
+
+    async function handleConfirm() {
+        const parsedValue = withdrawValue.replace(',', '.');
+
+        if (+parsedValue > total) {
+            Alert.alert('Valor solicitado maior que na carteira!');
+            return;
+        }
+
+        const data = {} as IWithdrawDTO;
+        data.valor = -parsedValue;
+        data.owner = user?.id;
+        const response = await api.post('/statements/types/3', data);
+        if (response.status === 200) {
+            Alert.alert(
+                'Saque solicitado!',
+                'Aguarde até 2 dias úteis para confirmação.',
+                [
+                    {
+                        text: 'OK',
+                        onPress: () => setModalVisible2(!modalVisible2),
+                        style: 'default',
+                    },
+                ]
+            );
+        }
     }
 
     return (
@@ -106,22 +152,17 @@ const MyRaffles = () => {
             >
                 <View style={{ flex: 1, justifyContent: 'center' }}>
                     <View style={styles.modalView}>
-                        <Text style={styles.modalText}>Informe o valor a ser sacado:</Text>
-                        <TextInput
-                            style={styles.modalInput}
-                            keyboardType='numeric'
-                            placeholder='Valor'
-                            placeholderTextColor='#fff'
-                        // value={total}
-                        // onChangeText={setTotal}
-                        />
-                        <View style={{ flexDirection: 'row' }}>
-                            <Pressable
-                                style={[styles.button, styles.buttonConfirm]}
-                                onPress={handleConfirm}
-                            >
-                                <Text style={styles.textStyle}>Confirmar</Text>
-                            </Pressable>
+                        <Text style={styles.modalText}>Histórico de Transações</Text>
+                        {
+                            transacoes.map(transacao => (
+                                <View style={{ width: '100%', marginVertical: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text style={[transacao.tipo_transacao === '1' ? { color: 'blue' } : { color: 'red' }, { width: '30%' }]}>{transacao.valor}</Text>
+                                    <Text style={{ width: '20%' }}>{transacao.tipo_transacao}</Text>
+                                    <Text style={{ width: '50%' }}>{transacao.sqltime}</Text>
+                                </View>
+                            ))
+                        }
+                        <View style={{ flexDirection: 'row', marginTop: 15 }}>
                             <Pressable
                                 style={[styles.button, styles.buttonClose]}
                                 onPress={() => setModalVisible(!modalVisible)}
@@ -133,19 +174,60 @@ const MyRaffles = () => {
                 </View>
             </Modal>
 
+            <Modal
+                animationType='fade'
+                transparent={true}
+                visible={modalVisible2}
+                onRequestClose={() => {
+                    Alert.alert('Modal has been closed.');
+                    setModalVisible2(!modalVisible2);
+                }}
+            >
+                <View style={{ flex: 1, justifyContent: 'center' }}>
+                    <View style={styles.modalView}>
+                        <Text style={styles.modalText}>Informe o valor a ser sacado:</Text>
+                        <TextInput
+                            style={styles.modalInput}
+                            keyboardType='numeric'
+                            placeholder='Valor'
+                            placeholderTextColor='#fff'
+                            value={withdrawValue}
+                            onChangeText={setWithdrawValue}
+                        />
+                        <View style={{ flexDirection: 'row' }}>
+                            <Pressable
+                                style={[styles.button, styles.buttonConfirm]}
+                                onPress={handleConfirm}
+                            >
+                                <Text style={styles.textStyle}>Confirmar</Text>
+                            </Pressable>
+                            <Pressable
+                                style={[styles.button, styles.buttonClose]}
+                                onPress={() => setModalVisible2(!modalVisible2)}
+                            >
+                                <Text style={styles.textStyle}>Fechar</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
             <View style={styles.headerContainer}>
                 <Text style={styles.title}>Minhas Rifas</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                    <TouchableOpacity style={{ marginLeft: 20, backgroundColor: '#fb5b5a', height: 30, width: 100, marginBottom: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center' }}>
+                    <TouchableOpacity
+                        style={{ marginLeft: 5, backgroundColor: '#fb5b5a', height: 30, width: 80, marginBottom: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center' }}
+                        onPress={handleHistory}
+                    >
                         <Text style={{ color: '#fff' }}>Histórico</Text>
                     </TouchableOpacity>
                     <View style={{ flexDirection: 'row', marginBottom: 10 }}>
                         <Icon style={{ fontSize: 20 }} name='money-bill-wave' size={20} color='#00802b' />
                         <Text style={{ color: 'black', fontSize: 20, marginHorizontal: 10 }}>Saldo:</Text>
-                        <Text style={{ color: 'black', fontSize: 20, fontWeight: '700' }}>R${total}</Text>
+                        <Text style={{ color: 'black', fontSize: 20, fontWeight: '700' }}>R${total.toFixed(2)}</Text>
                     </View>
                     <TouchableOpacity
-                        style={{ marginRight: 20, backgroundColor: '#fb5b5a', height: 30, width: 100, marginBottom: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center' }}
+                        style={{ marginRight: 5, backgroundColor: '#fb5b5a', height: 30, width: 80, marginBottom: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center' }}
                         onPress={handleWithdraw}
                     >
                         <Text style={{ color: '#fff' }}>Sacar</Text>
