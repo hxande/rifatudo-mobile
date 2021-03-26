@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView, Linking, Alert, Pressable, Modal } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView, Linking, Alert, Pressable, Modal, Share } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Feather as Icon, FontAwesome } from '@expo/vector-icons';
+import { Feather as Icon, FontAwesome as Icon2 } from '@expo/vector-icons';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import * as MailComposer from 'expo-mail-composer';
 import AuthContext from '../../contexts/auth';
@@ -147,6 +147,25 @@ const RaffleDetail = () => {
         setSelectedPaidCota(item);
     }
 
+    const onShare = async () => {
+        try {
+            const result = await Share.share({
+                message: 'React Native | A framework for building native apps using React',
+            });
+            if (result.action === Share.sharedAction) {
+                if (result.activityType) {
+                    // shared with activity type of result.activityType
+                } else {
+                    // shared
+                }
+            } else if (result.action === Share.dismissedAction) {
+                // dismissed
+            }
+        } catch (error) {
+            alert(error.message);
+        }
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <Modal
@@ -174,9 +193,15 @@ const RaffleDetail = () => {
             </Modal>
             <ScrollView>
                 <View style={styles.detailContainer}>
-                    <TouchableOpacity onPress={handleNavigateBack}>
-                        <Icon name='arrow-left' size={20} color='#fb5b5a' />
-                    </TouchableOpacity>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                        <TouchableOpacity onPress={handleNavigateBack}>
+                            <Icon name='arrow-left' size={20} color='#fb5b5a' />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={onShare}>
+                            <Icon2 name='share-alt' size={20} color='#fb5b5a' />
+                        </TouchableOpacity>
+                    </View>
 
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                         {

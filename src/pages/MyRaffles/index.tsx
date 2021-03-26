@@ -96,10 +96,14 @@ const MyRaffles = () => {
     }
 
     async function handleHistory() {
-        const response = await api.get('/statements');
-        if (response.status === 200) {
-            setTransacoes(response.data);
-            setModalVisible(true);
+        try {
+            const response = await api.get('/statements');
+            if (response.status === 200) {
+                setTransacoes(response.data);
+                setModalVisible(true);
+            }
+        } catch (error) {
+            console.log(error);
         }
     }
 
@@ -155,7 +159,7 @@ const MyRaffles = () => {
                         <Text style={styles.modalText}>Histórico de Transações</Text>
                         {
                             transacoes.map(transacao => (
-                                <View style={{ width: '100%', marginVertical: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                                <View key={transacao.ID} style={{ width: '100%', marginVertical: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                                     <Text style={[transacao.tipo_transacao === '1' ? { color: 'blue' } : { color: 'red' }, { width: '30%' }]}>{transacao.valor}</Text>
                                     <Text style={{ width: '20%' }}>{transacao.tipo_transacao}</Text>
                                     <Text style={{ width: '50%' }}>{transacao.sqltime}</Text>
