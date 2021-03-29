@@ -61,8 +61,6 @@ const Raffles = () => {
             return;
         }
 
-        console.warn(page);
-
         const response = await api.get(`/raffles/pages/${page + 1}`);
         if (response.data.length === 0) {
             setEndData(true);

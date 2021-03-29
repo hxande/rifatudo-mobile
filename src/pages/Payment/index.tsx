@@ -73,6 +73,7 @@ const Payment = () => {
                     if (response.status === 200) {
                         const responsePayment = await api.post('/payments/pay', data);
                         const responseStatement = api.post('/statements/types/1', data);
+                        const responseCheckStatus = api.put(`/raffles/${routeParams.cotas[0].id_rifa}/status/check`, {});
                         if (responsePayment.status === 200) {
                             Alert.alert('Pagamento aprovado!', `Recebemos seu pagamento de ${vlrPagamento}`);
                             navigation.navigate('Rifa');
