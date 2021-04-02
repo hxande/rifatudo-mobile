@@ -69,7 +69,7 @@ const Payment = () => {
                 setShowCheckout(false);
                 const data = createDTO();
                 try {
-                    const response = await api.put(`/raffles/${routeParams.cotas[0].id_rifa}/quotas/status/2`, data);
+                    const response = await api.put(`/raffles/${routeParams.cotas[0].id_rifa}/quotas/status/3`, data);
                     if (response.status === 200) {
                         const responsePayment = await api.post('/payments/pay', data);
                         const responseStatement = api.post('/statements/types/1', data);

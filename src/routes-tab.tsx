@@ -12,10 +12,10 @@ const RoutesTab = () => {
     const { signed } = useContext(AuthContext);
 
     return (
-        <AppTab.Navigator initialRouteName="Início">
-            <AppTab.Screen name="Início" component={RoutesStack} />
+        <AppTab.Navigator initialRouteName="Inicio">
+            <AppTab.Screen name="Inicio" component={RoutesStack} />
             {signed ?
-                <AppTab.Screen name="Criar Rifa" component={NewRaffle} />
+                <AppTab.Screen name="CriarRifa" component={NewRaffle} />
                 :
                 <>
                 </>

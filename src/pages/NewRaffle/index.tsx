@@ -143,7 +143,7 @@ const NewRaffle = () => {
                 }
                 Alert.alert('Rifa criada com sucesso!!!');
                 resetFields();
-                navigation.navigate('Início');
+                navigation.navigate('Inicio');
             }
         });
     };

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView, Linking, Alert, Pressable, Modal, Share } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Feather as Icon, FontAwesome as Icon2 } from '@expo/vector-icons';
-import { RectButton, ScrollView } from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native-gesture-handler';
 import * as MailComposer from 'expo-mail-composer';
 import AuthContext from '../../contexts/auth';
 import api from '../../services/api'
@@ -83,6 +83,22 @@ const RaffleDetail = () => {
     const [selectedPaidCota, setSelectedPaidCota] = useState<ICotas>({} as ICotas);
 
     useEffect(() => {
+        Linking.getInitialURL().then(url => {
+            console.warn(url);
+        });
+
+        // async function addUrlListener() {
+        //     if (Platform.OS === 'android') {
+        //         const url = await Linking.getInitialURL();
+        //         navigate(url);
+        //     } else {
+        //         Linking.addEventListener('url', handleOpenURL);
+        //     }
+        // }
+        // addUrlListener();
+    }, []);
+
+    useEffect(() => {
         async function getRifa() {
             const response = await api.get(`/rifas/${routeParams.raffle_id}`);
             setRifa(response.data[0]);
@@ -102,6 +118,20 @@ const RaffleDetail = () => {
         getImagens();
         getCotas();
     }, []);
+
+    // const handleOpenURL = (event: any) => {
+    //     navigate(event.url);
+    // };
+
+    // const navigate = (url: any) => {
+    //     const { navigate } = navigation;
+    //     const route = url.replace(/.*?:\/\//g, '');
+    //     const recipe = route.match(/\/([^\/]+)\/?$/)[1];
+    //     const routeName = route.split('/')[0];
+
+    // routeName: recipe
+    // recipe: teste (parâmetro)
+    // };
 
     function handleNavigateBack() {
         navigation.goBack();
@@ -193,7 +223,7 @@ const RaffleDetail = () => {
             </Modal>
             <ScrollView>
                 <View style={styles.detailContainer}>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <TouchableOpacity onPress={handleNavigateBack}>
                             <Icon name='arrow-left' size={20} color='#fb5b5a' />
                         </TouchableOpacity>
@@ -299,22 +329,6 @@ const RaffleDetail = () => {
                         </>
                     }
                 </View>
-                {/* {signed ?
-                    <View style={styles.footer}>
-                        <RectButton style={styles.button} onPress={handleWhatsapp}>
-                            <FontAwesome name='whatsapp' size={20} color='#fff' />
-                            <Text style={styles.buttonText}>Whatsapp</Text>
-                        </RectButton>
-
-                        <RectButton style={styles.button} onPress={handleComposeMail}>
-                            <Icon name='mail' size={20} color='#fff' />
-                            <Text style={styles.buttonText}>E-mail</Text>
-                        </RectButton>
-                    </View>
-                    :
-                    <>
-                    </>
-                } */}
             </ScrollView>
         </SafeAreaView>
     );

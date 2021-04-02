@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ActivityIndicator, Image, View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, TextInput, FlatList, ListRenderItem } from 'react-native';
+import { ActivityIndicator, Image, View, Text, StyleSheet, TouchableOpacity, Linking, Dimensions, TextInput, FlatList, ListRenderItem } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather as Icon } from '@expo/vector-icons';
@@ -22,10 +22,12 @@ interface IRifa {
     qtd_ganhadores: string;
     duracao: string;
     sqltime: string;
+    update_sqltime: string;
 }
 
 interface IRifaCotas {
     ID: number;
+    status: number;
     id_usuario: string;
     titulo: string;
     uf: string;
@@ -33,7 +35,7 @@ interface IRifaCotas {
     valor: string;
     qtd_cotas: string;
     qtd_compradas: string;
-    duracao: string;
+    duracao: Date;
     image_url: string;
 }
 
@@ -55,6 +57,63 @@ const Raffles = () => {
     const [scrolled, setScrolled] = useState<boolean>(false);
     const [endData, setEndData] = useState<boolean>(false);
 
+    useEffect(() => {
+        Linking.getInitialURL().then(url => {
+            console.warn(url);
+        });
+
+        async function getRifas() {
+            try {
+                const response = await api.get(`/raffles/pages/${page}`);
+                setRifas(response.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        getRifas();
+
+        async function getLotteryResult() {
+            try {
+                const response = await axios.get('https://lotericas.io/api/v1/jogos/federal/lasted');
+                setSorteioFederal(response.data.data[0]);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        getLotteryResult();
+    }, []);
+
+    useEffect(() => {
+        let arrayTemp: IRifaCotas[] = [];
+        rifas.forEach(async (rifa, index) => {
+            try {
+                const numCotasDisponiveis = await api.get(`/rifas/${rifa.ID}/cotas/status/0/contagem`);
+                const numCotasCompradas = await api.get(`/rifas/${rifa.ID}/cotas/status/1/contagem`);
+                let data: IRifaCotas = {} as IRifaCotas;
+                data.ID = rifa.ID;
+                data.status = +rifa.status;
+                data.id_usuario = rifa.id_usuario;
+                data.titulo = rifa.titulo;
+                data.valor = rifa.valor;
+                data.uf = rifa.uf;
+                data.cidade = rifa.cidade;
+                data.qtd_compradas = String(numCotasCompradas.data[0].contador);
+                data.qtd_cotas = String(numCotasDisponiveis.data[0].contador + numCotasCompradas.data[0].contador);
+                const deadline = new Date(rifa.update_sqltime.slice(0, 10));
+                const deadlineAdd = deadline.setDate(deadline.getDate() + +rifa.duracao);
+                data.duracao = new Date(deadlineAdd);
+                const response = await api.get(`/rifas/${rifa.ID}/imagens`);
+                data.image_url = response.data[0].image_url;
+                arrayTemp.push(data);
+                if (index === (rifas.length - 1)) {
+                    setRifasCotas(arrayTemp);
+                    setLoading(false);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    }, [rifas]);
 
     async function getMoreRaffles() {
         if (!scrolled || endData) {
@@ -73,49 +132,6 @@ const Raffles = () => {
     function onScroll() {
         setScrolled(true);
     }
-
-    useEffect(() => {
-        async function getRifas() {
-            const response = await api.get(`/raffles/pages/${page}`);
-            setRifas(response.data);
-        }
-        getRifas();
-
-        async function getLotteryResult() {
-            const response = await axios.get('https://lotericas.io/api/v1/jogos/federal/lasted');
-            setSorteioFederal(response.data.data[0]);
-        }
-        getLotteryResult();
-    }, []);
-
-    useEffect(() => {
-        let arrayTemp: IRifaCotas[] = [];
-        rifas.forEach(async (rifa, index) => {
-            try {
-                const numCotasDisponiveis = await api.get(`/rifas/${rifa.ID}/cotas/status/0/contagem`);
-                const numCotasCompradas = await api.get(`/rifas/${rifa.ID}/cotas/status/1/contagem`);
-                let data: IRifaCotas = {} as IRifaCotas;
-                data.ID = rifa.ID;
-                data.id_usuario = rifa.id_usuario;
-                data.titulo = rifa.titulo;
-                data.valor = rifa.valor;
-                data.uf = rifa.uf;
-                data.cidade = rifa.cidade;
-                data.qtd_compradas = String(numCotasCompradas.data[0].contador);
-                data.qtd_cotas = String(numCotasDisponiveis.data[0].contador + numCotasCompradas.data[0].contador);
-                data.duracao = rifa.duracao;
-                const response = await api.get(`/rifas/${rifa.ID}/imagens`);
-                data.image_url = response.data[0].image_url;
-                arrayTemp.push(data);
-                if (index === (rifas.length - 1)) {
-                    setRifasCotas(arrayTemp);
-                    setLoading(false);
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        });
-    }, [rifas]);
 
     function handleNavigateBack() {
         navigation.goBack();
@@ -141,7 +157,7 @@ const Raffles = () => {
                     <Text style={styles.itemPrice}>R$ {item.valor}</Text>
                 </View>
                 <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', paddingRight: 30 }}>
-                    <Text style={styles.itemLocation}>{item.cidade}, {item.uf} - 22/10/2020</Text>
+                    <Text style={styles.itemLocation}>{item.cidade}, {item.uf} - {item.status == 2 ? item.duracao.toLocaleString('pt-BR').slice(0, 10) : ''}</Text>
                     <Text style={styles.itemLocation}>{item.qtd_compradas}/{item.qtd_cotas}</Text>
                 </View>
             </View>
