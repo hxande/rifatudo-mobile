@@ -39,9 +39,16 @@ interface IRifaCotas {
     image_url: string;
 }
 
-interface ISorteioFederal {
-    dataApuracao: string;
-    dezenasSorteadasOrdemSorteio: string[];
+interface IResult {
+    ID: number;
+    data: string;
+    sorteio1: string;
+    sorteio2: string;
+    sorteio3: string;
+    sorteio4: string;
+    sorteio5: string;
+    sorteio6: string;
+    sqltime: string;
 }
 
 const Raffles = () => {
@@ -51,7 +58,7 @@ const Raffles = () => {
     const [rifas, setRifas] = useState<IRifa[]>([]);
     const [rifasCotas, setRifasCotas] = useState<IRifaCotas[]>([]);
 
-    const [sorteioFederal, setSorteioFederal] = useState<ISorteioFederal>({ dataApuracao: '', dezenasSorteadasOrdemSorteio: [] });
+    const [sorteioFederal, setSorteioFederal] = useState<IResult[]>([]);
 
     const [page, setPage] = useState<number>(1);
     const [scrolled, setScrolled] = useState<boolean>(false);
@@ -59,7 +66,7 @@ const Raffles = () => {
 
     useEffect(() => {
         Linking.getInitialURL().then(url => {
-            console.warn(url);
+            // console.warn(url);
         });
 
         async function getRifas() {
@@ -72,15 +79,25 @@ const Raffles = () => {
         }
         getRifas();
 
-        async function getLotteryResult() {
+        async function getResults() {
             try {
-                const response = await axios.get('https://lotericas.io/api/v1/jogos/federal/lasted');
-                setSorteioFederal(response.data.data[0]);
+                const response = await api.get('/results/lasted');
+                setSorteioFederal(response.data);
             } catch (error) {
                 console.log(error);
             }
         }
-        getLotteryResult();
+        getResults();
+
+        // async function getLotteryResult() {
+        //     try {
+        //         const response = await axios.get('https://lotericas.io/api/v1/jogos/federal/lasted');
+        //         setSorteioFederal(response.data.data[0]);
+        //     } catch (error) {
+        //         console.log(error);
+        //     }
+        // }
+        // getLotteryResult();
     }, []);
 
     useEffect(() => {
@@ -187,18 +204,18 @@ const Raffles = () => {
             <View style={styles.lotteryContainer}>
                 <View style={styles.lotteryInfoContainer}>
                     <Text style={{ fontSize: 16 }}>Último Sorteio: </Text>
-                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{sorteioFederal.dataApuracao}</Text>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{sorteioFederal[0].data}</Text>
                 </View>
                 <View style={{ flexDirection: 'row' }}>
-                    {
-                        sorteioFederal.dezenasSorteadasOrdemSorteio.map(dezena =>
-                            <Text key={dezena} style={styles.lotteryNumbersText}>{dezena}</Text>
-                        )
-                    }
+                    <Text style={styles.lotteryNumbersText}>{sorteioFederal[0].sorteio1}</Text>
+                    <Text style={styles.lotteryNumbersText}>{sorteioFederal[0].sorteio2}</Text>
+                    <Text style={styles.lotteryNumbersText}>{sorteioFederal[0].sorteio3}</Text>
+                    <Text style={styles.lotteryNumbersText}>{sorteioFederal[0].sorteio4}</Text>
+                    <Text style={styles.lotteryNumbersText}>{sorteioFederal[0].sorteio5}</Text>
                 </View>
                 <View style={styles.lotteryInfoContainer}>
                     <Text style={{ fontSize: 16 }}>Próximo Sorteio: </Text>
-                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{sorteioFederal.dataApuracao}</Text>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{sorteioFederal[0].data}</Text>
                 </View>
             </View>
 

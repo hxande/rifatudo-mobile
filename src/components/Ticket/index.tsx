@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Alert } from 'react-native';
 import { Feather as Icon, MaterialCommunityIcons as Icon2 } from '@expo/vector-icons';
 import api from '../../services/api';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -7,11 +7,20 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 interface Props {
     raffle: number;
     num: number;
+    buyer: number | undefined;
+    seller: number | undefined;
     status: number;
     value: number;
 }
 
-const Ticket: React.FC<Props> = ({ raffle, num, status, value }) => {
+interface IDisputesDTO {
+    id_comprador: String;
+    id_vendedor: String;
+    id_rifa: String;
+    id_cota: String;
+}
+
+const Ticket: React.FC<Props> = ({ raffle, buyer, seller, num, status, value }) => {
 
     const [title, setTitle] = useState<string>('');
     const [menu, setMenu] = useState<boolean>(false);
@@ -27,6 +36,27 @@ const Ticket: React.FC<Props> = ({ raffle, num, status, value }) => {
         }
         getRaffle();
     }, []);
+
+    async function handleDisputes() {
+        const dto: IDisputesDTO = {} as IDisputesDTO;
+        dto.id_comprador = String(buyer);
+        dto.id_vendedor = String(seller);
+        dto.id_rifa = String(raffle);
+        dto.id_cota = String(num);
+
+        try {
+            const response = await api.post('/disputes', { data: dto });
+            if (response.status === 200) {
+                Alert.alert('Disputa aberta!');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    function handleReceived() {
+        Alert.alert('Recebimento confirmado!');
+    }
 
     return (
         <>
@@ -75,14 +105,20 @@ const Ticket: React.FC<Props> = ({ raffle, num, status, value }) => {
                 menu && status === 4 ?
                     <View style={{ backgroundColor: '#e0e0d1', flex: 1, height: 50, marginBottom: 10, justifyContent: 'center', alignItems: 'center' }}>
                         <View style={{ flexDirection: 'row' }}>
-                            <TouchableOpacity style={{ flexDirection: 'row', backgroundColor: '#fff', height: 35, width: 150, marginRight: 10, justifyContent: 'center', alignItems: 'center', borderRadius: 10 }}>
+                            <TouchableOpacity
+                                style={{ flexDirection: 'row', backgroundColor: '#fff', height: 35, width: 150, marginRight: 10, justifyContent: 'center', alignItems: 'center', borderRadius: 10 }}
+                                onPress={handleReceived}
+                            >
                                 <Icon2 name='truck-check' style={{ fontSize: 20, marginRight: 5 }} />
                                 <View>
                                     <Text style={{ fontSize: 14 }}>CONFIRMAR</Text>
                                     <Text style={{ fontSize: 14 }}>RECEBIMENTO</Text>
                                 </View>
                             </TouchableOpacity>
-                            <TouchableOpacity style={{ flexDirection: 'row', backgroundColor: '#fff', height: 35, width: 150, marginLeft: 10, justifyContent: 'center', alignItems: 'center', borderRadius: 10 }}>
+                            <TouchableOpacity
+                                style={{ flexDirection: 'row', backgroundColor: '#fff', height: 35, width: 150, marginLeft: 10, justifyContent: 'center', alignItems: 'center', borderRadius: 10 }}
+                                onPress={handleDisputes}
+                            >
                                 <Icon name='phone-call' style={{ fontSize: 20, marginRight: 5 }} />
                                 <Text style={{ fontSize: 14 }}>ABRIR DISPUTA</Text>
                             </TouchableOpacity>
