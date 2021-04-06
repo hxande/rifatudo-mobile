@@ -293,7 +293,8 @@ const NewRaffle = () => {
 
                         <Text>Descrição</Text>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, { height: 200 }]}
+                            multiline={true}
                             placeholder='Descrição'
                             value={desc}
                             onChangeText={text => setDesc(text)}
@@ -323,7 +324,7 @@ const NewRaffle = () => {
                             autoCorrect={false}
                         />
 
-                        <Text>Quantidade de Rifas Gratuítas</Text>
+                        <Text>Quantidade de Rifas Gratúitas</Text>
                         <TextInput
                             style={styles.input}
                             placeholder='Quantidade'
@@ -341,14 +342,14 @@ const NewRaffle = () => {
                             autoCorrect={false}
                         />
 
-                        <Text>Quantidade de Ganhadores</Text>
+                        {/* <Text>Quantidade de Ganhadores</Text>
                         <TextInput
                             style={styles.input}
                             placeholder='Quantidade'
                             value={String(qttWinners)}
                             onChangeText={text => setQttWinners(text)}
                             autoCorrect={false}
-                        />
+                        /> */}
 
                         <Text>Valor</Text>
                         <TextInput
