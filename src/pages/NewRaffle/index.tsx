@@ -7,6 +7,7 @@ import { Feather as Icon } from '@expo/vector-icons';
 import { Picker } from '@react-native-community/picker';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
+import IRaffle from '../../models/Raffle';
 import AuthContext from '../../contexts/auth';
 import api from '../../services/api';
 
@@ -29,7 +30,7 @@ const NewRaffle = () => {
 
     const [ufs, setUfs] = useState<string[]>([]);
     const [cities, setCities] = useState<string[]>([]);
-    const [selectedUf, setSelectedUf] = useState('0');
+    const [selectedUf, setSelectedUf] = useState<string>('0');
     const [selectedCity, setSelectedCity] = useState<string>('0');
 
     const [categories, setCategories] = useState<ICategory[]>([]);
@@ -41,12 +42,12 @@ const NewRaffle = () => {
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('');
     const [category, setCategory] = useState(1);
-    const [qtt, setQtt] = useState('');
-    const [qttG, setQttG] = useState('');
-    const [qttM, setQttM] = useState('');
-    const [qttWinners, setQttWinners] = useState('');
-    const [qttDays, setQttDays] = useState('');
-    const [price, setPrice] = useState('');
+    const [qtt, setQtt] = useState(0);
+    const [qttF, setQttF] = useState(0);
+    const [qttM, setQttM] = useState(0);
+    const [qttWinners, setQttWinners] = useState(0);
+    const [qttDays, setQttDays] = useState(0);
+    const [price, setPrice] = useState(0);
 
     useEffect(() => {
         axios.get<IBGEUFResponse[]>('https://servicodados.ibge.gov.br/api/v1/localidades/estados').then(response => {
@@ -114,32 +115,30 @@ const NewRaffle = () => {
             return;
         }
 
-        const data = {
-            data: {
-                'id_usuario': user?.id,
-                'titulo': title,
-                'descricao': desc,
-                'id_categoria': category,
-                'uf': selectedUf,
-                'cidade': selectedCity,
-                'status': String(0),
-                'valor': price,
-                'qtd_cotas': qtt,
-                'qtd_cotas_g': qttG,
-                'qtd_cotas_m': qttM,
-                'qtd_ganhadores': qttWinners,
-                'duracao': qttDays,
-            }
+        const data: IRaffle = {
+            id_user: user!.id,
+            title: title,
+            description: desc,
+            id_category: category,
+            uf: selectedUf,
+            city: selectedCity,
+            status: 0,
+            value: price,
+            qtt: qtt,
+            qtt_free: qttF,
+            qtt_min: qttM,
+            qtt_winners: qttWinners,
+            duration: qttDays
         };
 
-        await api.post('rifas', data).then(async response => {
+        await api.post('raffles', data).then(async response => {
             if (response.status === 200) {
-                await uploadToServer(response.data, 1, image1);
+                await uploadToServer(response.data.rows[0].id, 1, image1);
                 if (image2 !== String(null)) {
-                    await uploadToServer(response.data, 2, image2);
+                    await uploadToServer(response.data.rows[0].id, 2, image2);
                 }
                 if (image3 !== String(null)) {
-                    await uploadToServer(response.data, 3, image3);
+                    await uploadToServer(response.data.rows[0].id, 3, image3);
                 }
                 Alert.alert('Rifa criada com sucesso!!!');
                 resetFields();
@@ -169,7 +168,7 @@ const NewRaffle = () => {
             body: data,
         };
 
-        fetch(`http://192.168.0.10:3333/rifas/${id}/imagens/${num}`, config)
+        fetch(`http://192.168.0.10:3333/raffles/${id}/images/${num}`, config)
             .then((checkStatusAndGetJSONResponse) => {
                 console.log(checkStatusAndGetJSONResponse);
             })
@@ -181,21 +180,21 @@ const NewRaffle = () => {
             image1 !== String(null) &&
             title !== '' &&
             desc !== '' &&
-            qtt !== '' &&
-            qttG !== '' &&
-            qttM !== '' &&
-            qttWinners !== '' &&
-            price !== '' &&
-            qttDays !== '' &&
+            // qtt !== 0 &&
+            // qttF !== 0 &&
+            // qttM !== 0 &&
+            // qttWinners !== 0 &&
+            // price !== 0 &&
+            // qttDays !== 0 &&
             selectedUf !== '0' &&
             selectedCity !== '0') {
             if (
-                +qtt < 0 ||
-                +qttG < 0 ||
-                +qttM < 0 ||
-                +qttWinners < 0 ||
-                +price < 0 ||
-                +qttDays < 0
+                qtt < 0 ||
+                qttF < 0 ||
+                qttM < 0 ||
+                // qttWinners < 0 ||
+                price < 0 ||
+                qttDays < 0
             ) {
                 return false;
             } else {
@@ -214,12 +213,12 @@ const NewRaffle = () => {
         setTitle('');
         setDesc('');
         setCategory(1);
-        setQtt('');
-        setQttG('');
-        setQttM('');
-        setQttWinners('');
-        setPrice('');
-        setQttDays('');
+        setQtt(0);
+        setQttF(0);
+        setQttM(0);
+        setQttWinners(0);
+        setPrice(0);
+        setQttDays(0);
         setSelectedUf('0');
         setSelectedCity('0');
     };
@@ -320,17 +319,19 @@ const NewRaffle = () => {
                             style={styles.input}
                             placeholder='Quantidade'
                             value={String(qtt)}
-                            onChangeText={text => setQtt(text)}
+                            onChangeText={text => setQtt(+text)}
                             autoCorrect={false}
+                            keyboardType='numeric'
                         />
 
                         <Text>Quantidade de Rifas Gratúitas</Text>
                         <TextInput
                             style={styles.input}
                             placeholder='Quantidade'
-                            value={String(qttG)}
-                            onChangeText={text => setQttG(text)}
+                            value={String(qttF)}
+                            onChangeText={text => setQttF(+text)}
                             autoCorrect={false}
+                            keyboardType='numeric'
                         />
 
                         <Text>Quantidade Mínima de Rifas a ser Vendidas</Text>
@@ -338,8 +339,9 @@ const NewRaffle = () => {
                             style={styles.input}
                             placeholder='Quantidade'
                             value={String(qttM)}
-                            onChangeText={text => setQttM(text)}
+                            onChangeText={text => setQttM(+text)}
                             autoCorrect={false}
+                            keyboardType='numeric'
                         />
 
                         {/* <Text>Quantidade de Ganhadores</Text>
@@ -356,8 +358,9 @@ const NewRaffle = () => {
                             style={styles.input}
                             placeholder='Valor'
                             value={String(price)}
-                            onChangeText={text => setPrice(text)}
+                            onChangeText={text => setPrice(+text)}
                             autoCorrect={false}
+                            keyboardType='numeric'
                         />
 
                         <Text>Duração em Dias</Text>
@@ -365,8 +368,9 @@ const NewRaffle = () => {
                             style={styles.input}
                             placeholder='Quantidade de dias'
                             value={String(qttDays)}
-                            onChangeText={text => setQttDays(text)}
+                            onChangeText={text => setQttDays(+text)}
                             autoCorrect={false}
+                            keyboardType='numeric'
                         />
 
                         <RectButton style={styles.button} onPress={() => handleSubmit()}>
