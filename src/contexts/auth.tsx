@@ -40,21 +40,20 @@ export const AuthProvider: React.FC = ({ children }) => {
 
     async function logar(username: string, password: string) {
         let data = {
-            data: {
-                username,
-                password
-            }
+            username,
+            password
         };
 
         try {
             const response = await api.post('/users/auth', data);
             const { token } = response.data;
             setUser(response.data.user);
+
             api.defaults.headers['Authorization'] = `Bearer ${token}`;
             await AsyncStorage.setItem('@RNAuth:user', JSON.stringify(response.data.user));
             await AsyncStorage.setItem('@RNAuth:token', token);
         } catch (error) {
-            console.log('AUTH CONTEXT -> ', error)
+            console.log('AUTH CONTEXT -> ', error);
         }
     }
 
@@ -77,5 +76,5 @@ export const AuthProvider: React.FC = ({ children }) => {
         <AuthContext.Provider value={{ signed: !!user, user, logar, sair }}>
             {children}
         </AuthContext.Provider>
-    )
+    );
 };
