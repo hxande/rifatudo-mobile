@@ -5,44 +5,13 @@ import { Feather as Icon, FontAwesome as Icon2 } from '@expo/vector-icons';
 import { ScrollView } from 'react-native-gesture-handler';
 import * as MailComposer from 'expo-mail-composer';
 import AuthContext from '../../contexts/auth';
+import IRaffle from '../../models/Raffle';
+import IQuota from '../../models/Quota';
+import IImage from '../../models/Image';
 import api from '../../services/api'
 
 interface Params {
     raffle_id: number;
-}
-
-interface IRifa {
-    ID: number;
-    id_usuario: string;
-    titulo: string;
-    descricao: string;
-    id_categoria: string;
-    uf: string;
-    cidade: string;
-    status: string;
-    valor: string;
-    qtd_cotas: string;
-    qtd_cotas_g: string;
-    qtd_cotas_m: string;
-    qtd_ganhadores: string;
-    duracao: string;
-}
-
-interface IImagens {
-    ID: number,
-    id_rifa: number,
-    num: number,
-    conteudo: string,
-    image_url: string
-}
-
-interface ICotas {
-    ID: number;
-    id_rifa: string;
-    id_usuario: string;
-    num: string;
-    valor: string;
-    status: string;
 }
 
 const RaffleDetail = () => {
@@ -52,86 +21,41 @@ const RaffleDetail = () => {
 
     const routeParams = route.params as Params;
 
-    const [rifa, setRifa] = useState<IRifa>({
-        ID: 0,
-        id_usuario: '',
-        titulo: '',
-        descricao: '',
-        id_categoria: '',
-        uf: '',
-        cidade: '',
-        status: '',
-        valor: '',
-        qtd_cotas: '',
-        qtd_cotas_g: '',
-        qtd_cotas_m: '',
-        qtd_ganhadores: '',
-        duracao: '',
-    });
-    const [imagens, setImagens] = useState<IImagens[]>([]);
-    const [cotas, setCotas] = useState<ICotas[]>([{
-        ID: 0,
-        id_rifa: '',
-        id_usuario: '',
-        num: '',
-        valor: '',
-        status: '',
-    }]);
-    const [selectedCotas, setSelectedCotas] = useState<ICotas[]>([]);
+    const [raffle, setRaffle] = useState<IRaffle>({} as IRaffle);
+    const [images, setImages] = useState<IImage[]>([]);
+    const [quotas, setQuotas] = useState<IQuota[]>([]);
+    const [selectedQuotas, setSelectedQuotas] = useState<IQuota[]>([]);
 
     const [modalVisible, setModalVisible] = useState(false);
-    const [selectedPaidCota, setSelectedPaidCota] = useState<ICotas>({} as ICotas);
+    const [selectedPaidQuota, setSelectedPaidQuota] = useState<IQuota>({} as IQuota);
 
     useEffect(() => {
         Linking.getInitialURL().then(url => {
-            console.warn(url);
+            // console.warn(url);
         });
-
-        // async function addUrlListener() {
-        //     if (Platform.OS === 'android') {
-        //         const url = await Linking.getInitialURL();
-        //         navigate(url);
-        //     } else {
-        //         Linking.addEventListener('url', handleOpenURL);
-        //     }
-        // }
-        // addUrlListener();
     }, []);
 
     useEffect(() => {
-        async function getRifa() {
-            const response = await api.get(`/rifas/${routeParams.raffle_id}`);
-            setRifa(response.data[0]);
+        async function getRaffle() {
+            const response = await api.get(`/raffles/${routeParams.raffle_id}`);
+            console.warn(response);
+            setRaffle(response.data[0]);
         }
 
-        async function getImagens() {
-            const response = await api.get(`/rifas/${routeParams.raffle_id}/imagens`);
-            setImagens(response.data);
+        async function getImages() {
+            const response = await api.get(`/raffles/${routeParams.raffle_id}/images`);
+            setImages(response.data);
         }
 
-        async function getCotas() {
-            const response = await api.get(`/rifas/${routeParams.raffle_id}/cotas`);
-            setCotas(response.data);
+        async function getQuotas() {
+            const response = await api.get(`/raffles/${routeParams.raffle_id}/quotas`);
+            setQuotas(response.data);
         }
 
-        getRifa();
-        getImagens();
-        getCotas();
+        getRaffle();
+        getImages();
+        getQuotas();
     }, []);
-
-    // const handleOpenURL = (event: any) => {
-    //     navigate(event.url);
-    // };
-
-    // const navigate = (url: any) => {
-    //     const { navigate } = navigation;
-    //     const route = url.replace(/.*?:\/\//g, '');
-    //     const recipe = route.match(/\/([^\/]+)\/?$/)[1];
-    //     const routeName = route.split('/')[0];
-
-    // routeName: recipe
-    // recipe: teste (parâmetro)
-    // };
 
     function handleNavigateBack() {
         navigation.goBack();
@@ -140,8 +64,8 @@ const RaffleDetail = () => {
     function handleNavigateToCheckout() {
         if (signed) {
             navigation.navigate('Checkout', {
-                cotas: selectedCotas,
-                owner: rifa.id_usuario
+                cotas: selectedQuotas,
+                owner: raffle.id_user,
             });
         } else {
             Alert.alert('Favor logar antes');
@@ -159,22 +83,22 @@ const RaffleDetail = () => {
         Linking.openURL(`whatsapp://send?phone=06192562759&text=Fala tu`);
     }
 
-    function handleSelectCota(item: ICotas) {
+    function handleSelectCota(item: IQuota) {
         if (!signed) {
             return;
         }
-        const alreadySelected = selectedCotas.findIndex(cota => cota.ID === item.ID);
+        const alreadySelected = selectedQuotas.findIndex(quota => quota.id === item.id);
         if (alreadySelected >= 0) {
-            const filteredCotas = selectedCotas.filter(cota => cota.ID !== item.ID);
-            setSelectedCotas(filteredCotas);
+            const filteredCotas = selectedQuotas.filter(quota => quota.id !== item.id);
+            setSelectedQuotas(filteredCotas);
         } else {
-            setSelectedCotas([...selectedCotas, item]);
+            setSelectedQuotas([...selectedQuotas, item]);
         }
     }
 
-    function handleShowBuyer(item: ICotas) {
+    function handleShowBuyer(item: IQuota) {
         setModalVisible(true);
-        setSelectedPaidCota(item);
+        setSelectedPaidQuota(item);
     }
 
     const onShare = async () => {
@@ -210,8 +134,8 @@ const RaffleDetail = () => {
                 <View style={{ flex: 1, justifyContent: 'center' }}>
                     <View style={styles.modalView}>
                         <Text style={styles.modalText}>Rifa Comprada</Text>
-                        <Text style={styles.modalText}>Comprador: {selectedPaidCota.id_usuario}</Text>
-                        <Text style={styles.modalText}>Número: {selectedPaidCota.num}</Text>
+                        <Text style={styles.modalText}>Comprador: {selectedPaidQuota.id_user}</Text>
+                        <Text style={styles.modalText}>Número: {selectedPaidQuota.num}</Text>
                         <Pressable
                             style={[styles.button, styles.buttonClose]}
                             onPress={() => setModalVisible(!modalVisible)}
@@ -235,52 +159,52 @@ const RaffleDetail = () => {
 
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                         {
-                            imagens.map((imagem, index) => {
+                            images.map((image, index) => {
                                 return (
-                                    <Image key={index} style={styles.image} source={{ uri: imagem.image_url }} />
+                                    <Image key={index} style={styles.image} source={{ uri: image.file }} />
                                 )
                             })
                         }
                     </ScrollView>
 
-                    <Text style={styles.raffleHeader}>#{rifa.ID} - {rifa.titulo}</Text>
-                    <Text style={styles.raffleHeader}>R$ {rifa.valor}</Text>
+                    <Text style={styles.raffleHeader}>#{raffle.id} - {raffle.title}</Text>
+                    <Text style={styles.raffleHeader}>R$ {raffle.value}</Text>
 
                     <View style={styles.filedContainer}>
                         <Text style={styles.fieldTitle}>Descrição</Text>
-                        <Text style={styles.fieldContent}>{rifa.descricao}</Text>
+                        <Text style={styles.fieldContent}>{raffle.description}</Text>
                     </View>
                     <View style={styles.filedContainer}>
                         <Text style={styles.fieldTitle}>Usuário</Text>
-                        <Text style={styles.fieldContent}>{rifa.id_usuario}</Text>
+                        <Text style={styles.fieldContent}>{raffle.id_user}</Text>
                     </View>
                     <View style={styles.filedContainer}>
                         <Text style={styles.fieldTitle}>Endereço</Text>
-                        <Text style={styles.fieldContent}>{rifa.cidade}, {rifa.uf}</Text>
+                        <Text style={styles.fieldContent}>{raffle.city}, {raffle.uf}</Text>
                     </View>
                     <View style={styles.filedContainer}>
                         <Text style={styles.fieldTitle}>Rifas</Text>
                         <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-                            {cotas.map(cota => (
-                                cota.status === '0'
+                            {quotas.map(quota => (
+                                quota.status === 0
                                     ?
                                     <TouchableOpacity
-                                        key={cota.ID}
-                                        style={[+cota.valor === 0 ? { backgroundColor: 'gold' } : {}, styles.item, selectedCotas.includes(cota) ? styles.selectedItem : {}]}
-                                        onPress={() => handleSelectCota(cota)}
+                                        key={quota.id}
+                                        style={[quota.value === 0 ? { backgroundColor: 'gold' } : {}, styles.item, selectedQuotas.includes(quota) ? styles.selectedItem : {}]}
+                                        onPress={() => handleSelectCota(quota)}
                                     >
                                         <View style={styles.numbers}>
-                                            <Text style={{ color: '#fff' }}>{cota.num}</Text>
+                                            <Text style={{ color: '#fff' }}>{quota.num}</Text>
                                         </View>
                                     </TouchableOpacity>
                                     :
                                     <TouchableOpacity
-                                        key={cota.ID}
+                                        key={quota.id}
                                         style={styles.item}
-                                        onPress={() => handleShowBuyer(cota)}
+                                        onPress={() => handleShowBuyer(quota)}
                                     >
                                         <View style={styles.selectedNumbers}>
-                                            <Text style={{ color: '#fff' }}>{cota.num}</Text>
+                                            <Text style={{ color: '#fff' }}>{quota.num}</Text>
                                         </View>
                                     </TouchableOpacity>
                             ))}
@@ -309,13 +233,13 @@ const RaffleDetail = () => {
                             <View style={{ justifyContent: 'space-between', flexDirection: 'row', marginVertical: 10 }}>
                                 <View>
                                     <Text style={{ fontSize: 16, color: '#fb5b5a' }}>Quantidade Total:</Text>
-                                    <Text style={{ fontSize: 24, color: '#fb5b5a', fontWeight: 'bold' }}>{selectedCotas.length}</Text>
+                                    <Text style={{ fontSize: 24, color: '#fb5b5a', fontWeight: 'bold' }}>{selectedQuotas.length}</Text>
                                 </View>
                                 <View>
                                     <Text style={{ fontSize: 16, color: '#fb5b5a' }}>Preço:</Text>
                                     <Text style={{ fontSize: 24, color: '#fb5b5a', fontWeight: 'bold' }}>
                                         R${
-                                            selectedCotas.reduce((total, single) => total + +single.valor, 0).toFixed(2)
+                                            selectedQuotas.reduce((total, single) => +total + +single.value, 0)
                                         }
                                     </Text>
                                 </View>

@@ -66,7 +66,7 @@ const NewRaffle = () => {
 
     useEffect(() => {
         async function loadCategories() {
-            await api.get('/categorias').then(response => {
+            await api.get('/categories').then(response => {
                 setCategories(response.data);
             });
         }
