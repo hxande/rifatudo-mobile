@@ -8,13 +8,9 @@ import { Picker } from '@react-native-community/picker';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import IRaffle from '../../models/Raffle';
+import ICategory from '../../models/Category';
 import AuthContext from '../../contexts/auth';
 import api from '../../services/api';
-
-interface ICategory {
-    ID: number;
-    nome: string;
-}
 
 interface IBGEUFResponse {
     sigla: string;
@@ -309,7 +305,7 @@ const NewRaffle = () => {
                             }}>
                             {
                                 categories.map(category => (
-                                    <Picker.Item key={category.ID} label={category.nome} value={category.ID} />
+                                    <Picker.Item key={category.id} label={category.description} value={category.id} />
                                 ))
                             }
                         </Picker>
