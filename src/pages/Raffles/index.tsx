@@ -56,7 +56,6 @@ const Raffles = () => {
         async function getRifas() {
             try {
                 const response = await api.get(`/raffles/pages/${page}`);
-                console.warn(response.data);
                 setRaffles(response.data);
                 setLoading(false);
             } catch (error) {
@@ -81,13 +80,16 @@ const Raffles = () => {
             return;
         }
 
-        const response = await api.get(`/raffles/pages/${page + 1}`);
-        if (response.data.length === 0) {
-            setEndData(true);
+        try {
+            const response = await api.get(`/raffles/pages/${page + 1}`);
+            if (response.data.length === 0) {
+                setEndData(true);
+            }
+            setPage(page + 1);
+            setRaffles([...raffles, ...response.data]);
+        } catch (error) {
+            console.log(error);
         }
-
-        setPage(page + 1);
-        setRaffles([...raffles, ...response.data]);
     }
 
     function onScroll() {

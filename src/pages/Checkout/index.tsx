@@ -8,45 +8,22 @@ import { Picker } from '@react-native-community/picker';
 // import Clipboard from '@react-native-community/clipboard';
 import * as ImagePicker from 'expo-image-picker';
 import AuthContext from '../../contexts/auth';
+import IRaffle from '../../models/Raffle';
+import IQuota from '../../models/Quota';
 import api from '../../services/api'
 
 interface Params {
-    cotas: ICotas[];
+    raffle: number;
+    quotas: IQuota[];
     owner: string;
-}
-
-interface ICotas {
-    ID: number;
-    id_rifa: string;
-    id_usuario: string;
-    num: string;
-    valor: string;
-    status: string;
-}
-
-interface IRifa {
-    ID: number;
-    id_usuario: string;
-    titulo: string;
-    descricao: string;
-    id_categoria: string;
-    uf: string;
-    cidade: string;
-    status: string;
-    valor: string;
-    qtd_cotas: string;
-    qtd_cotas_g: string;
-    qtd_cotas_m: string;
-    qtd_ganhadores: string;
-    duracao: string;
 }
 
 interface IPaymentDTO {
     user: number | undefined;
-    raffle: string;
+    raffle: number;
     quotas: string;
     method: number;
-    valor: number;
+    value: number;
 }
 
 const Checkout = () => {
@@ -55,30 +32,8 @@ const Checkout = () => {
     const route = useRoute();
     const routeParams = route.params as Params;
 
-    const [rifa, setRifa] = useState<IRifa>({
-        ID: 0,
-        id_usuario: '',
-        titulo: '',
-        descricao: '',
-        id_categoria: '',
-        uf: '',
-        cidade: '',
-        status: '',
-        valor: '',
-        qtd_cotas: '',
-        qtd_cotas_g: '',
-        qtd_cotas_m: '',
-        qtd_ganhadores: '',
-        duracao: '',
-    });
-    const [cotas, setCotas] = useState<ICotas[]>([{
-        ID: 0,
-        id_rifa: '',
-        id_usuario: '',
-        num: '',
-        valor: '',
-        status: '',
-    }]);
+    const [raffle, setRaffle] = useState<IRaffle>({} as IRaffle);
+    const [quotas, setQuotas] = useState<IQuota[]>([]);
     const [total, setTotal] = useState<number>(0);
     const [paymentMeth, setPaymentMeth] = useState<string>('0');
     const [image, setImage] = useState<string>(String(null));
@@ -96,14 +51,14 @@ const Checkout = () => {
     }, []);
 
     useEffect(() => {
-        async function getRifa() {
-            setCotas(routeParams.cotas);
-            const response = await api.get(`/rifas/${routeParams.cotas[0].id_rifa}`);
-            setRifa(response.data[0]);
+        async function getRaffle() {
+            setQuotas(routeParams.quotas);
+            const response = await api.get(`/raffles/${routeParams.raffle}`);
+            setRaffle(response.data[0]);
         }
 
-        getRifa();
-        setTotal(+routeParams.cotas.reduce((total, single) => total + +single.valor, 0).toFixed(2));
+        getRaffle();
+        setTotal(routeParams.quotas.reduce((total, single) => total + single.value, 0));
     }, []);
 
     const handlePickImage = async () => {
@@ -129,7 +84,7 @@ const Checkout = () => {
             const totalToPay = calculatePrice();
             navigation.navigate('Pagamento', {
                 total: totalToPay,
-                cotas,
+                quotas,
                 owner: routeParams.owner,
             });
         }
@@ -140,14 +95,11 @@ const Checkout = () => {
             } else {
                 const data = createDTO();
                 try {
-                    await uploadToServer(rifa.ID, data.quotas, image);
-                    const response = await api.put(`/raffles/${rifa.ID}/quotas/status/1`, data);
+                    await uploadToServer(raffle.id!, data.quotas, image);
+                    const response = await api.post('/payments/pay', data);
                     if (response.status === 200) {
-                        const responsePayment = await api.post('/payments/pay', data);
-                        if (responsePayment.status === 200) {
-                            Alert.alert('Comprovante enviado! Aguarde confirmação do recebimento');
-                            navigation.navigate('Rifa');
-                        }
+                        Alert.alert('Comprovante enviado! Aguarde confirmação do recebimento');
+                        navigation.navigate('Rifa');
                     }
                 } catch (error) {
                     console.log(error);
@@ -157,20 +109,20 @@ const Checkout = () => {
     }
 
     function calculatePrice() {
-        return (total + (cotas.length * 0.25)).toFixed(2);
+        return total + (quotas.length * 0.25);
     }
 
     function createDTO() {
         const toStringfy: string[] = [];
-        cotas.forEach(cota => {
-            toStringfy.push(cota.num);
+        quotas.forEach(quota => {
+            toStringfy.push(String(quota.num));
         });
         const dto = {} as IPaymentDTO;
-        dto.user = user?.id;
-        dto.raffle = cotas[0].id_rifa;
+        dto.user = user!.id;
+        dto.raffle = routeParams.raffle;
         dto.quotas = toStringfy.join(',');
         dto.method = 2;
-        dto.valor = +calculatePrice();
+        dto.value = calculatePrice();
         return dto;
     }
 
@@ -216,21 +168,21 @@ const Checkout = () => {
                     </TouchableOpacity>
                     <Text style={styles.selectedItemstitle}>Números Selecionados</Text>
                     <View style={styles.selectedItemsContainer}>
-                        {cotas.map(cota => (
-                            <Text style={styles.selectedItems} key={cota.ID}>{cota.num}</Text>
+                        {quotas.map(quota => (
+                            <Text style={styles.selectedItems} key={quota.id}>{quota.num}</Text>
                         ))}
                     </View>
                     <View style={styles.field}>
-                        <Text style={styles.fieldTitle}>Rifa - #{rifa.ID}</Text>
-                        <Text style={styles.fieldContent}>{rifa.descricao}</Text>
+                        <Text style={styles.fieldTitle}>Rifa - #{routeParams.raffle}</Text>
+                        <Text style={styles.fieldContent}>{raffle.description}</Text>
                     </View>
                     <View style={styles.field}>
                         <Text style={styles.fieldTitle}>Rifador</Text>
-                        <Text style={styles.fieldContent}>{rifa.id_usuario}</Text>
+                        <Text style={styles.fieldContent}>{raffle.id_user}</Text>
                     </View>
                     <View style={styles.field}>
                         <Text style={styles.fieldTitle}>Localização</Text>
-                        <Text style={styles.fieldContent}>{rifa.cidade}, {rifa.uf}</Text>
+                        <Text style={styles.fieldContent}>{raffle.city}, {raffle.uf}</Text>
                     </View>
                     <View style={[styles.field, { marginBottom: 5 }]}>
                         <Text style={styles.fieldTitle}>Informações para Pagamento</Text>
@@ -239,7 +191,7 @@ const Checkout = () => {
                         <View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={styles.paymentItem}>Quantidade de números:</Text>
-                                <Text style={styles.paymentItem}>{cotas.length}</Text>
+                                <Text style={styles.paymentItem}>{quotas.length}</Text>
                             </View>
                             {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={styles.paymentItem}>Valor Unitário:</Text>
@@ -247,11 +199,11 @@ const Checkout = () => {
                             </View> */}
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={styles.paymentItem}>Taxa Operacional:</Text>
-                                <Text style={styles.paymentItem}>{(cotas.length * 0.25).toFixed(2)}</Text>
+                                <Text style={styles.paymentItem}>{quotas.length * 0.25}</Text>
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={styles.paymentItem}>Valor Total:</Text>
-                                <Text style={styles.paymentItem}>{(total + (cotas.length * 0.25)).toFixed(2)}</Text>
+                                <Text style={styles.paymentItem}>{total + (quotas.length * 0.25)}</Text>
                             </View>
                         </View>
                     </View>

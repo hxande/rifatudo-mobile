@@ -38,7 +38,6 @@ const RaffleDetail = () => {
     useEffect(() => {
         async function getRaffle() {
             const response = await api.get(`/raffles/${routeParams.raffle_id}`);
-            console.warn(response);
             setRaffle(response.data[0]);
         }
 
@@ -64,7 +63,8 @@ const RaffleDetail = () => {
     function handleNavigateToCheckout() {
         if (signed) {
             navigation.navigate('Checkout', {
-                cotas: selectedQuotas,
+                raffle: raffle.id,
+                quotas: selectedQuotas,
                 owner: raffle.id_user,
             });
         } else {
@@ -83,7 +83,7 @@ const RaffleDetail = () => {
         Linking.openURL(`whatsapp://send?phone=06192562759&text=Fala tu`);
     }
 
-    function handleSelectCota(item: IQuota) {
+    function handleSelectQuota(item: IQuota) {
         if (!signed) {
             return;
         }
@@ -191,7 +191,7 @@ const RaffleDetail = () => {
                                     <TouchableOpacity
                                         key={quota.id}
                                         style={[quota.value === 0 ? { backgroundColor: 'gold' } : {}, styles.item, selectedQuotas.includes(quota) ? styles.selectedItem : {}]}
-                                        onPress={() => handleSelectCota(quota)}
+                                        onPress={() => handleSelectQuota(quota)}
                                     >
                                         <View style={styles.numbers}>
                                             <Text style={{ color: '#fff' }}>{quota.num}</Text>
