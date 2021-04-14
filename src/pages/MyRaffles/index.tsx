@@ -10,11 +10,6 @@ import MyRaffle from '../../components/MyRaffle';
 import Ticket from '../../components/Ticket';
 import api from '../../services/api';
 
-interface IWithdrawDTO {
-    owner: number | undefined;
-    valor: number;
-}
-
 const MyRaffles = () => {
     const { user } = useContext(AuthContext);
     const [quotas, setQuotas] = useState<IQuota[]>([]);
@@ -90,10 +85,13 @@ const MyRaffles = () => {
             return;
         }
 
-        const data = {} as IWithdrawDTO;
-        data.valor = -parsedValue;
-        data.owner = user?.id;
-        const response = await api.post('/statements/types/3', data);
+        const data = {} as IStatement;
+        data.id_raffle = 0;
+        data.id_user = user!.id;
+        data.kind = 3;
+        data.value = +parsedValue;
+
+        const response = await api.post('/statements', data);
         if (response.status === 200) {
             Alert.alert(
                 'Saque solicitado!',
@@ -147,7 +145,7 @@ const MyRaffles = () => {
                                     <Text style={{ width: '25%' }}>Rifa: {statement.id_raffle}</Text>
                                     <Text style={{ width: '25%' }}>{getStatusName(statement.kind)}</Text>
                                     <Text style={[statement.kind === 2 ? { color: 'blue' } : { color: 'red' }, { width: '20%' }]}>{statement.value}</Text>
-                                    <Text style={{ width: '30%' }}>{new Date(statement.created_at).toLocaleDateString('pt-BR')}</Text>
+                                    <Text style={{ width: '30%' }}>{new Date(statement.created_at!).toLocaleDateString('pt-BR')}</Text>
                                 </View>
                             ))
                         }
@@ -224,11 +222,10 @@ const MyRaffles = () => {
                 </View>
             </View>
             <View style={{ backgroundColor: '#fff', flexDirection: 'row', height: 50, alignItems: 'center' }}>
-                <TouchableOpacity
-                    style={!tabsRifas ?
-                        [styles.tabSelectedBtn, { borderTopRightRadius: 25, borderBottomRightRadius: 25 }]
-                        :
-                        styles.tabHiddenBtn} onPress={handleChangeTabs}
+                <TouchableOpacity style={!tabsRifas ?
+                    [styles.tabSelectedBtn, { borderTopRightRadius: 25, borderBottomRightRadius: 25 }]
+                    :
+                    styles.tabHiddenBtn} onPress={handleChangeTabs}
                 >
                     <Icon style={{ fontSize: 20 }} name='chart-bar' size={20} color={!tabsRifas ? '#fff' : '#00b300'} />
                     <Text style={{ fontWeight: 'bold' }}>RIFADAS</Text>
