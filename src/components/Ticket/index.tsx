@@ -8,7 +8,6 @@ interface Props {
     raffle: number;
     num: number;
     buyer: number | undefined;
-    seller: number | undefined;
     status: number;
     value: number;
 }
@@ -20,7 +19,7 @@ interface IDisputesDTO {
     id_cota: String;
 }
 
-const Ticket: React.FC<Props> = ({ raffle, buyer, seller, num, status, value }) => {
+const Ticket: React.FC<Props> = ({ raffle, buyer, num, status, value }) => {
 
     const [title, setTitle] = useState<string>('');
     const [menu, setMenu] = useState<boolean>(false);
@@ -29,8 +28,8 @@ const Ticket: React.FC<Props> = ({ raffle, buyer, seller, num, status, value }) 
     useEffect(() => {
         async function getRaffle() {
             try {
-                const response = await api.get(`/rifas/${raffle}`);
-                setTitle(response.data[0].titulo);
+                const response = await api.get(`/raffles/${raffle}`);
+                setTitle(response.data[0].title);
             } catch (error) {
                 console.log(error);
             }
@@ -41,7 +40,6 @@ const Ticket: React.FC<Props> = ({ raffle, buyer, seller, num, status, value }) 
     async function handleDisputes() {
         const dto: IDisputesDTO = {} as IDisputesDTO;
         dto.id_comprador = String(buyer);
-        dto.id_vendedor = String(seller);
         dto.id_rifa = String(raffle);
         dto.id_cota = String(num);
 
@@ -67,7 +65,7 @@ const Ticket: React.FC<Props> = ({ raffle, buyer, seller, num, status, value }) 
                 statusName = 'Aberta';
                 break;
             case 1:
-                statusName = 'Aguardando confirmação';
+                statusName = 'Aguardando';
                 break;
             case 2:
                 statusName = 'Em disputa';
@@ -155,7 +153,7 @@ const Ticket: React.FC<Props> = ({ raffle, buyer, seller, num, status, value }) 
                     <View style={{ flexDirection: 'row' }}>
                         <Text style={{ fontWeight: 'bold' }}>Preço</Text>
                     </View>
-                    <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#003d99' }}>R${value.toFixed(2)}</Text>
+                    <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#003d99' }}>R${value}</Text>
                 </View>
             </View>
             {

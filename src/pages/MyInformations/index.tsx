@@ -1,37 +1,28 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native';
-import api from '../../services/api';
 import AuthContext from '../../contexts/auth';
-
-interface IMyInformations {
-    ID: number,
-    username: string,
-    email: string,
-    nome: string,
-    sobrenome: string,
-    data_nascimento: string,
-    sexo: string,
-    cpf: string,
-}
+import IUser from '../../models/User';
+import api from '../../services/api';
 
 const MyInformations = () => {
     const { user, sair } = useContext(AuthContext);
 
-    const [myInformation, setMyInformation] = useState<IMyInformations>({} as IMyInformations);
+    const [myInformation, setMyInformation] = useState<IUser>({} as IUser);
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
 
     useEffect(() => {
         async function getUser() {
-            let myInfos: IMyInformations = {} as IMyInformations;
-            const response = await api.get(`/users/${user?.id}`);
-            myInfos.ID = response.data[0].ID;
+            const myInfos: IUser = {} as IUser;
+            const response = await api.get(`/users/${user!.id}`);
+            console.warn(response.data);
+            myInfos.id = response.data[0].id;
             myInfos.cpf = response.data[0].cpf;
-            myInfos.data_nascimento = response.data[0].data_nascimento;
+            myInfos.birth = response.data[0].birth;
             myInfos.email = response.data[0].email;
-            myInfos.nome = response.data[0].nome;
-            myInfos.sexo = response.data[0].sexo;
-            myInfos.sobrenome = response.data[0].sobrenome;
+            myInfos.first_name = response.data[0].first_name;
+            myInfos.sex = response.data[0].sex;
+            myInfos.surname = response.data[0].surname;
             myInfos.username = response.data[0].username;
             setMyInformation(myInfos);
             setEmail(response.data[0].email);

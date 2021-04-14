@@ -3,27 +3,11 @@ import { StyleSheet, View, Text, ScrollView, SafeAreaView, TouchableOpacity, Ale
 import { FontAwesome5 as Icon } from '@expo/vector-icons';
 import { MaterialIcons as Icon2 } from '@expo/vector-icons';
 import AuthContext from '../../contexts/auth';
+import IRaffle from '../../models/Raffle';
+import IQuota from '../../models/Quota';
 import MyRaffle from '../../components/MyRaffle';
 import Ticket from '../../components/Ticket';
 import api from '../../services/api';
-
-interface ICota {
-    ID: number;
-    id_rifa: string;
-    id_usuario: string;
-    num: string;
-    valor: string;
-    status: string;
-}
-
-interface IMinhaRifa {
-    ID: number;
-    titulo: string;
-    status: string;
-    duracao: string;
-    soma: number;
-    contagem: number;
-}
 
 interface IStatements {
     ID: number;
@@ -40,8 +24,9 @@ interface IWithdrawDTO {
 
 const MyRaffles = () => {
     const { user } = useContext(AuthContext);
-    const [cotas, setCotas] = useState<ICota[]>([]);
-    const [minhaRifa, setMinhaRifa] = useState<IMinhaRifa[]>([]);
+    const [quotas, setQuotas] = useState<IQuota[]>([]);
+    const [myRaffles, setMyRaffles] = useState<IRaffle[]>([]);
+
     const [transacoes, setTransacoes] = useState<IStatements[]>([]);
 
     const [total, setTotal] = useState<number>(0);
@@ -52,27 +37,27 @@ const MyRaffles = () => {
     const [withdrawValue, setWithdrawValue] = useState<string>('');
 
     useEffect(() => {
-        async function getCotas() {
+        async function getQuotas() {
             try {
-                const response = await api.get(`/users/${user?.id}/cotas`);
-                setCotas(response.data);
+                const response = await api.get(`/users/${user!.id}/quotas`);
+                setQuotas(response.data);
             } catch (error) {
                 console.log(error);
             }
         }
-        getCotas();
+        getQuotas();
 
-        async function getMinhaRifa() {
+        async function getMyRaffles() {
             try {
-                const response = await api.get(`/rifas/${user?.id}/my`);
-                if (response.data[0].ID !== null) {
-                    setMinhaRifa(response.data);
+                const response = await api.get(`/raffles/users/${user!.id}`);
+                if (response.data[0].id !== null) {
+                    setMyRaffles(response.data);
                 }
             } catch (error) {
                 console.log(error);
             }
         }
-        getMinhaRifa();
+        getMyRaffles();
     }, []);
 
     useEffect(() => {
@@ -264,9 +249,9 @@ const MyRaffles = () => {
                             <Text style={{ color: '#fb5b5a', textAlign: 'center', fontSize: 30, marginVertical: 10 }}>Em Andamento</Text>
                             <ScrollView style={{ flex: 1 }}>
                                 {
-                                    minhaRifa && minhaRifa.map(minha => {
-                                        return +minha.status < 3 ?
-                                            <MyRaffle key={minha.ID} num={minha.ID} title={minha.titulo} qtt={minha.contagem} finishDate={minha.duracao} status={minha.status} value={minha.soma} />
+                                    myRaffles && myRaffles.map(raffle => {
+                                        return raffle.status < 3 ?
+                                            <MyRaffle key={raffle.id} num={raffle.id!} title={raffle.title} finishDate={raffle.updated_at!} duration={raffle.duration} status={raffle.status} />
                                             :
                                             <></>
                                     })
@@ -277,9 +262,9 @@ const MyRaffles = () => {
                             <Text style={{ color: '#fb5b5a', textAlign: 'center', fontSize: 30, marginVertical: 10 }}>Finalizadas</Text>
                             <ScrollView style={{ flex: 1 }}>
                                 {
-                                    minhaRifa && minhaRifa.map(minha => {
-                                        return +minha.status > 2 ?
-                                            <MyRaffle key={minha.ID} num={minha.ID} title={minha.titulo} qtt={minha.contagem} finishDate={minha.duracao} status={minha.status} value={minha.soma} />
+                                    myRaffles && myRaffles.map(raffle => {
+                                        return raffle.status > 2 ?
+                                            <MyRaffle key={raffle.id} num={raffle.id!} title={raffle.title} finishDate={raffle.updated_at!} duration={raffle.duration} status={raffle.status} />
                                             :
                                             <></>
                                     })
@@ -291,8 +276,8 @@ const MyRaffles = () => {
                     <View>
                         <ScrollView showsVerticalScrollIndicator={true} indicatorStyle='white' scrollIndicatorInsets={{ right: 0 }}>
                             {
-                                cotas && cotas.map(cota =>
-                                    <Ticket key={cota.ID} raffle={+cota.id_rifa} num={+cota.num} status={+cota.status} value={+cota.valor} buyer={user?.id} seller={+cota.id_usuario} />
+                                quotas && quotas.map(quota =>
+                                    <Ticket key={quota.id} raffle={quota.id_raffle} num={quota.num} status={quota.status} value={quota.value} buyer={user!.id} />
                                 )
                             }
                         </ScrollView>
