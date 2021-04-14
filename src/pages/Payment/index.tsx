@@ -5,30 +5,23 @@ import { Feather as Icon } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 import { MainContainer, Title, HeaderCheckout } from './styles';
 import AuthContext from '../../contexts/auth';
+import IQuota from '../../models/Quota';
 import api from '../../services/api'
 
 interface Params {
+    raffle: number;
     total: number;
-    cotas: ICotas[];
+    quotas: IQuota[];
     owner: string
-}
-
-interface ICotas {
-    ID: number;
-    id_rifa: string;
-    id_usuario: string;
-    num: string;
-    valor: string;
-    status: string;
 }
 
 interface IPaymentDTO {
     user: number | undefined;
-    raffle: string;
+    raffle: number;
     quotas: string;
     method: number;
-    valor: number;
-    owner: string;
+    value: number;
+    owner?: string;
 }
 
 const Payment = () => {
@@ -38,27 +31,27 @@ const Payment = () => {
 
     const routeParams = route.params as Params;
 
-    const [idPagamento, setIdPagamento] = useState('1');
-    const [emailPagamento, setEmailPagamento] = useState('meuemail@gmail.com');
-    const [descricaoPagamento, setDescricaoPagamento] = useState('Venda de produto digital');
-    const [vlrPagamento, setVlrPagamento] = useState('0.00');
+    const [idPayment, setIdPayment] = useState('1');
+    const [emailPayment, setEmailPayment] = useState('meuemail@gmail.com');
+    const [descPayment, setDescPayment] = useState('Venda de produto digital');
+    const [valuePayment, setValuePayment] = useState('0.00');
     const [showCheckout, setShowCheckout] = useState(true);
 
     useEffect(() => {
-        setVlrPagamento(String(routeParams.total));
+        setValuePayment(String(routeParams.total));
     }, []);
 
     function createDTO() {
         const toStringfy: string[] = [];
-        routeParams.cotas.forEach(cota => {
-            toStringfy.push(cota.num);
+        routeParams.quotas.forEach(quota => {
+            toStringfy.push(String(quota.num));
         });
         const dto = {} as IPaymentDTO;
-        dto.user = user?.id;
-        dto.raffle = routeParams.cotas[0].id_rifa;
+        dto.user = user!.id;
+        dto.raffle = routeParams.raffle;
         dto.quotas = toStringfy.join(',');
         dto.method = 1;
-        dto.valor = +vlrPagamento;
+        dto.value = +valuePayment;
         dto.owner = routeParams.owner;
         return dto;
     }
@@ -69,15 +62,10 @@ const Payment = () => {
                 setShowCheckout(false);
                 const data = createDTO();
                 try {
-                    const response = await api.put(`/raffles/${routeParams.cotas[0].id_rifa}/quotas/status/3`, data);
-                    if (response.status === 200) {
-                        const responsePayment = await api.post('/payments/pay', data);
-                        const responseStatement = api.post('/statements/types/1', data);
-                        const responseCheckStatus = api.put(`/raffles/${routeParams.cotas[0].id_rifa}/status/check`, {});
-                        if (responsePayment.status === 200) {
-                            Alert.alert('Pagamento aprovado!', `Recebemos seu pagamento de ${vlrPagamento}`);
-                            navigation.navigate('Rifa');
-                        }
+                    const responsePayment = await api.post('/payments/pay/confirmed', data);
+                    if (responsePayment.status === 200) {
+                        Alert.alert('Pagamento aprovado!', `Recebemos seu pagamento de ${valuePayment}`);
+                        navigation.navigate('Rifa');
                     }
                 } catch (error) {
                     console.log(error);
@@ -87,13 +75,10 @@ const Payment = () => {
                 setShowCheckout(false);
                 const dataPending = createDTO();
                 try {
-                    const response = await api.put(`/raffles/${routeParams.cotas[0].id_rifa}/quotas/status/1`, dataPending);
-                    if (response.status === 200) {
-                        const responsePayment = await api.post('/payments/pay', dataPending);
-                        if (responsePayment.status === 200) {
-                            Alert.alert('Pagamento pendente!', `Seu pagamento de ${vlrPagamento} está pendente de processamento, assim que for processado seguiremos com o pedido!`);
-                            navigation.navigate('Rifa');
-                        }
+                    const responsePayment = await api.post('/payments/pay/pending', dataPending);
+                    if (responsePayment.status === 200) {
+                        Alert.alert('Pagamento pendente!', `Seu pagamento de ${valuePayment} está pendente de processamento, assim que for processado seguiremos com o pedido!`);
+                        navigation.navigate('Rifa');
                     }
                 } catch (error) {
                     console.log(error);
@@ -121,7 +106,7 @@ const Payment = () => {
                 </HeaderCheckout>
                 {showCheckout ?
                     <WebView
-                        source={{ uri: `http://192.168.0.10:3333/payments/checkout/${idPagamento}/${emailPagamento}/${descricaoPagamento}/${vlrPagamento}` }}
+                        source={{ uri: `http://192.168.0.10:3333/payments/checkout/${idPayment}/${emailPayment}/${descPayment}/${valuePayment}` }}
                         onNavigationStateChange={state => stateChange(state)}
                         startInLoadingState={true}
                         renderLoading={() => <ActivityIndicator size='large' color='#fff' style={{ marginBottom: 15, paddingTop: 10 }}></ActivityIndicator>}

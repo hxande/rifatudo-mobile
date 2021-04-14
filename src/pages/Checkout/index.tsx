@@ -58,7 +58,7 @@ const Checkout = () => {
         }
 
         getRaffle();
-        setTotal(routeParams.quotas.reduce((total, single) => total + single.value, 0));
+        setTotal(routeParams.quotas.reduce((total, single) => +total + +single.value, 0));
     }, []);
 
     const handlePickImage = async () => {
@@ -83,6 +83,7 @@ const Checkout = () => {
         if (paymentMeth === '1') {
             const totalToPay = calculatePrice();
             navigation.navigate('Pagamento', {
+                raffle: routeParams.raffle,
                 total: totalToPay,
                 quotas,
                 owner: routeParams.owner,
@@ -96,7 +97,7 @@ const Checkout = () => {
                 const data = createDTO();
                 try {
                     await uploadToServer(raffle.id!, data.quotas, image);
-                    const response = await api.post('/payments/pay', data);
+                    const response = await api.post('/payments/pay/pending', data);
                     if (response.status === 200) {
                         Alert.alert('Comprovante enviado! Aguarde confirmação do recebimento');
                         navigation.navigate('Rifa');
@@ -131,7 +132,7 @@ const Checkout = () => {
         Alert.alert('Copiado!');
     }
 
-    const uploadToServer = async (id: number, quotas: string, sourceUrl: string) => {
+    const uploadToServer = async (id: number, quotasBuyed: string, sourceUrl: string) => {
         const filename = sourceUrl.split('/').pop();
         const match = /\.(\w+)$/.exec(String(filename));
         const type = match ? `image/${match[1]}` : `image`;
@@ -152,7 +153,7 @@ const Checkout = () => {
             body: data,
         };
 
-        fetch(`http://192.168.0.10:3333/raffles/${id}/quotas/${quotas}/receipt`, config)
+        fetch(`http://192.168.0.10:3333/raffles/${id}/quotas/${quotasBuyed}/receipt`, config)
             .then((checkStatusAndGetJSONResponse) => {
                 console.log(checkStatusAndGetJSONResponse);
             })

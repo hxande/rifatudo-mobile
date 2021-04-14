@@ -190,7 +190,7 @@ const RaffleDetail = () => {
                                     ?
                                     <TouchableOpacity
                                         key={quota.id}
-                                        style={[quota.value === 0 ? { backgroundColor: 'gold' } : {}, styles.item, selectedQuotas.includes(quota) ? styles.selectedItem : {}]}
+                                        style={[+quota.value === 0 ? { backgroundColor: 'gold' } : {}, styles.item, selectedQuotas.includes(quota) ? styles.selectedItem : {}]}
                                         onPress={() => handleSelectQuota(quota)}
                                     >
                                         <View style={styles.numbers}>
