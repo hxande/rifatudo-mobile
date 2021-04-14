@@ -5,17 +5,10 @@ import { MaterialIcons as Icon2 } from '@expo/vector-icons';
 import AuthContext from '../../contexts/auth';
 import IRaffle from '../../models/Raffle';
 import IQuota from '../../models/Quota';
+import IStatement from '../../models/Statement';
 import MyRaffle from '../../components/MyRaffle';
 import Ticket from '../../components/Ticket';
 import api from '../../services/api';
-
-interface IStatements {
-    ID: number;
-    id_usuario: string;
-    tipo_transacao: string;
-    valor: string;
-    sqltime: string;
-}
 
 interface IWithdrawDTO {
     owner: number | undefined;
@@ -27,7 +20,7 @@ const MyRaffles = () => {
     const [quotas, setQuotas] = useState<IQuota[]>([]);
     const [myRaffles, setMyRaffles] = useState<IRaffle[]>([]);
 
-    const [transacoes, setTransacoes] = useState<IStatements[]>([]);
+    const [statements, setStatements] = useState<IStatement[]>([]);
 
     const [total, setTotal] = useState<number>(0);
     const [tabsRifas, setTabsRifas] = useState<boolean>(false);
@@ -60,18 +53,6 @@ const MyRaffles = () => {
         getMyRaffles();
     }, []);
 
-    useEffect(() => {
-        async function getTotal() {
-            try {
-                const response = await api.get(`/statements/total/${user?.id}`);
-                setTotal(response.data[0].total !== null ? response.data[0].total : 0);
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        getTotal();
-    }, []);
-
     // useEffect(() => {
     //     setModalVisible(true);
     // }, [transacoes]);
@@ -84,7 +65,7 @@ const MyRaffles = () => {
         try {
             const response = await api.get('/statements');
             if (response.status === 200) {
-                setTransacoes(response.data);
+                setStatements(response.data);
                 setModalVisible(true);
             }
         } catch (error) {
@@ -128,6 +109,24 @@ const MyRaffles = () => {
         }
     }
 
+    function getStatusName(status: number): string {
+        let statusName = '';
+        switch (status) {
+            case 1:
+                statusName = 'Compra';
+                break;
+            case 2:
+                statusName = 'Venda';
+                break;
+            case 3:
+                statusName = 'Saque';
+                break;
+            default:
+                statusName = '?';
+        }
+        return statusName;
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <Modal
@@ -143,11 +142,12 @@ const MyRaffles = () => {
                     <View style={styles.modalView}>
                         <Text style={styles.modalText}>Histórico de Transações</Text>
                         {
-                            transacoes.map(transacao => (
-                                <View key={transacao.ID} style={{ width: '100%', marginVertical: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text style={[transacao.tipo_transacao === '1' ? { color: 'blue' } : { color: 'red' }, { width: '30%' }]}>{transacao.valor}</Text>
-                                    <Text style={{ width: '20%' }}>{transacao.tipo_transacao}</Text>
-                                    <Text style={{ width: '50%' }}>{transacao.sqltime}</Text>
+                            statements.map(statement => (
+                                <View key={statement.id} style={{ width: '100%', marginVertical: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text style={{ width: '25%' }}>Rifa: {statement.id_raffle}</Text>
+                                    <Text style={{ width: '25%' }}>{getStatusName(statement.kind)}</Text>
+                                    <Text style={[statement.kind === 2 ? { color: 'blue' } : { color: 'red' }, { width: '20%' }]}>{statement.value}</Text>
+                                    <Text style={{ width: '30%' }}>{new Date(statement.created_at).toLocaleDateString('pt-BR')}</Text>
                                 </View>
                             ))
                         }
