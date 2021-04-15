@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, Animated, SafeAreaView, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, Animated, SafeAreaView, ScrollView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-community/picker';
@@ -27,6 +27,7 @@ const Register = () => {
     const [cpf, setCpf] = useState<string>('');
 
     const [fieldMessage, setFieldMessage] = useState<string>('');
+    const [show, setShow] = useState(false);
 
     const animation = new Animated.Value(0);
     const interpolated = animation.interpolate({
@@ -77,6 +78,7 @@ const Register = () => {
 
     const onChangeDate = (event: IAndroidEvent, selectedDate?: Date) => {
         const currentDate = selectedDate || birth;
+        setShow(Platform.OS === 'ios');
         setBirth(currentDate);
     };
 
@@ -147,16 +149,27 @@ const Register = () => {
                         onChangeText={onChangeCPF}
                     />
                     <Text style={styles.dateTitleText}>Data de nascimento</Text>
-                    <DateTimePicker
-                        style={{ width: 165, backgroundColor: '#fff' }}
-                        testID='dateTimePicker'
-                        value={birth}
-                        mode={'date'}
-                        is24Hour={true}
-                        display='default'
-                        onChange={onChangeDate}
-                        locale='pt-BR'
-                    />
+                    {
+                        (show || Platform.OS === 'ios') && (
+                            <DateTimePicker
+                                style={[Platform.OS === 'ios' ? { height: 100 } : {}, { width: Dimensions.get('window').width - 40, backgroundColor: '#fff' }]}
+                                testID='dateTimePicker'
+                                value={birth}
+                                mode={'date'}
+                                is24Hour={true}
+                                display='default'
+                                onChange={onChangeDate}
+                                locale='pt-BR'
+                            />
+                        )
+                    }
+                    {
+                        Platform.OS === 'android' && (
+                            <TouchableOpacity onPress={() => setShow(true)}>
+                                <Text style={{ color: '#fff' }}>{new Date(birth).toLocaleDateString('pt-BR')}</Text>
+                            </TouchableOpacity>
+                        )
+                    }
                     <TextInput
                         style={{
                             marginBottom: 30,
@@ -168,7 +181,7 @@ const Register = () => {
                         editable={false}
                     />
                     <Picker
-                        style={{ height: 50, width: Dimensions.get('window').width, marginBottom: 20 }}
+                        style={[Platform.OS === 'android' ? { width: 200 } : { width: Dimensions.get('window').width }, { color: '#fff', height: 50, marginBottom: 20 }]}
                         itemStyle={{ height: 50, width: Dimensions.get('window').width }}
                         selectedValue={sex}
                         onValueChange={(value, index) => {
@@ -210,6 +223,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 60,
+        paddingVertical: 30,
         transform: [{ translateX: 0 }]
     },
 
