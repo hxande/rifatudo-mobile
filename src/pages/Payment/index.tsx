@@ -106,7 +106,7 @@ const Payment = () => {
                 </HeaderCheckout>
                 {showCheckout ?
                     <WebView
-                        source={{ uri: `http://192.168.0.10:3333/payments/checkout/${idPayment}/${emailPayment}/${descPayment}/${valuePayment}` }}
+                        source={{ uri: `https://rifatudo-backend.herokuapp.com/payments/checkout/${idPayment}/${emailPayment}/${descPayment}/${valuePayment}` }}
                         onNavigationStateChange={state => stateChange(state)}
                         startInLoadingState={true}
                         renderLoading={() => <ActivityIndicator size='large' color='#fff' style={{ marginBottom: 15, paddingTop: 10 }}></ActivityIndicator>}

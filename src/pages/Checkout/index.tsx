@@ -153,7 +153,7 @@ const Checkout = () => {
             body: data,
         };
 
-        fetch(`http://192.168.0.10:3333/raffles/${id}/quotas/${quotasBuyed}/receipt`, config)
+        fetch(`https://rifatudo-backend.herokuapp.com/raffles/${id}/quotas/${quotasBuyed}/receipt`, config)
             .then((checkStatusAndGetJSONResponse) => {
                 console.log(checkStatusAndGetJSONResponse);
             })

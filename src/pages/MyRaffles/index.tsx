@@ -247,7 +247,7 @@ const MyRaffles = () => {
                             <ScrollView style={{ flex: 1 }}>
                                 {
                                     myRaffles && myRaffles.map(raffle => {
-                                        return raffle.status < 3 ?
+                                        return raffle.status > 0 && raffle.status < 3 ?
                                             <MyRaffle key={raffle.id} num={raffle.id!} title={raffle.title} finishDate={raffle.updated_at!} duration={raffle.duration} status={raffle.status} />
                                             :
                                             <></>

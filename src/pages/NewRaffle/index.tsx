@@ -164,7 +164,7 @@ const NewRaffle = () => {
             body: data,
         };
 
-        fetch(`http://192.168.0.10:3333/raffles/${id}/images/${num}`, config)
+        fetch(`https://rifatudo-backend.herokuapp.com/raffles/${id}/images/${num}`, config)
             .then((checkStatusAndGetJSONResponse) => {
                 console.log(checkStatusAndGetJSONResponse);
             })
@@ -305,7 +305,7 @@ const NewRaffle = () => {
                             }}>
                             {
                                 categories.map(category => (
-                                    <Picker.Item key={category.id} label={category.description} value={category.id} />
+                                    <Picker.Item key={category.id} label={category.description} value={category.id!} />
                                 ))
                             }
                         </Picker>
