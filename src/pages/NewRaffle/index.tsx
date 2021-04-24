@@ -20,6 +20,10 @@ interface IBGECityResponse {
     nome: string;
 }
 
+interface IRaffleMail extends IRaffle {
+    mail?: string;
+}
+
 const NewRaffle = () => {
     const navigation = useNavigation();
     const { signed, user, logar } = useContext(AuthContext);
@@ -111,7 +115,8 @@ const NewRaffle = () => {
             return;
         }
 
-        const data: IRaffle = {
+        const data: IRaffleMail = {
+            mail: user!.email,
             id_user: user!.id,
             title: title,
             description: desc,
