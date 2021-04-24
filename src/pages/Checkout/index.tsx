@@ -15,7 +15,7 @@ import api from '../../services/api'
 interface Params {
     raffle: number;
     quotas: IQuota[];
-    owner: string;
+    owner: number;
 }
 
 interface IPaymentDTO {

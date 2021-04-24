@@ -12,7 +12,7 @@ interface Params {
     raffle: number;
     total: number;
     quotas: IQuota[];
-    owner: string
+    owner: number
 }
 
 interface IPaymentDTO {
@@ -21,7 +21,7 @@ interface IPaymentDTO {
     quotas: string;
     method: number;
     value: number;
-    owner?: string;
+    owner?: number;
 }
 
 const Payment = () => {
