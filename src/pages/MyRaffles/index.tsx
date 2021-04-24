@@ -142,7 +142,12 @@ const MyRaffles = () => {
                         {
                             statements.map(statement => (
                                 <View key={statement.id} style={{ width: '100%', marginVertical: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text style={{ width: '25%' }}>Rifa: {statement.id_raffle}</Text>
+                                    {
+                                        statement.id_raffle != 0 ?
+                                            <Text style={{ width: '25%' }}>Rifa: {statement.id_raffle}</Text>
+                                            :
+                                            <Text style={{ width: '25%' }}></Text>
+                                    }
                                     <Text style={{ width: '25%' }}>{getStatusName(statement.kind)}</Text>
                                     <Text style={[statement.kind === 2 ? { color: 'blue' } : { color: 'red' }, { width: '20%' }]}>{statement.value}</Text>
                                     <Text style={{ width: '30%' }}>{new Date(statement.created_at!).toLocaleDateString('pt-BR')}</Text>
