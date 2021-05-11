@@ -150,7 +150,7 @@ const Raffles = () => {
 
             <View style={styles.lotteryContainer}>
                 <View style={styles.lotteryInfoContainer}>
-                    <Text style={{ fontSize: 16 }}>Último Sorteio: </Text>
+                    <Text style={{ fontSize: 16 }}>Último Sorteio:  </Text>
                     <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{sorteioFederal[0].data}</Text>
                 </View>
                 <View style={{ flexDirection: 'row' }}>
@@ -161,7 +161,7 @@ const Raffles = () => {
                     <Text style={styles.lotteryNumbersText}>{sorteioFederal[0].sorteio5}</Text>
                 </View>
                 <View style={styles.lotteryInfoContainer}>
-                    <Text style={{ fontSize: 16 }}>Próximo Sorteio: </Text>
+                    <Text style={{ fontSize: 16 }}>  Próximo Sorteio: </Text>
                     <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{sorteioFederal[0].data}</Text>
                 </View>
             </View>
@@ -191,6 +191,7 @@ const styles = StyleSheet.create({
 
     container: {
         flex: 1,
+        backgroundColor: '#380744',
     },
 
     searchContainer: {
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
     },
 
     lotteryContainer: {
-        height: 80,
+        height: 'auto',
         borderRadius: 10,
         margin: 8,
         backgroundColor: '#fff',
@@ -245,7 +246,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#eee',
         borderRadius: 8,
-        padding: 8,
+        margin: 6,
         flexDirection: 'row',
     },
 

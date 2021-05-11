@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, Animated, SafeAreaView, ScrollView, Platform } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, Animated, SafeAreaView, ScrollView, Platform, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-community/picker';
@@ -7,6 +7,7 @@ import { Dimensions } from 'react-native';
 import api from '../../services/api';
 import { cpfMask } from '../../utils/cpfMask';
 
+const logo = require('../../../assets/splash.png')
 interface IAndroidEvent {
     type: string;
     nativeEvent: {
@@ -110,9 +111,17 @@ const Register = () => {
 
     return (
         <SafeAreaView>
-            <ScrollView>
+            <ScrollView
+                contentContainerStyle={{ paddingBottom: 100, backgroundColor: '#330b41' }}
+            >
                 <View style={styles.container}>
-                    <TextInput editable={false} style={styles.header}>Registrar</TextInput>
+
+                    <Image
+                        style={styles.tinyLogo}
+                        source={logo}
+                    />
+
+                    <TextInput editable={false} style={styles.header}>Cadastrar</TextInput>
                     <Animated.View style={[getAnimationStyle(), { alignSelf: 'stretch' }]}>
                         <TextInput
                             textContentType='emailAddress'
@@ -219,10 +228,10 @@ const Register = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#003f5c',
+        backgroundColor: '#380744',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 60,
+        paddingHorizontal: 20,
         paddingVertical: 30,
         transform: [{ translateX: 0 }]
     },
@@ -254,7 +263,7 @@ const styles = StyleSheet.create({
 
     text: {
         color: "white",
-        fontSize: 11
+        fontSize: 16
     },
 
     validateText: {
@@ -263,7 +272,7 @@ const styles = StyleSheet.create({
 
     registerBtn: {
         width: "80%",
-        backgroundColor: "#fb5b5a",
+        backgroundColor: "rgb(187,112,25)",
         borderRadius: 25,
         height: 50,
         alignItems: "center",
@@ -271,6 +280,12 @@ const styles = StyleSheet.create({
         marginTop: 40,
         marginBottom: 10
     },
+    tinyLogo: {
+        width: '50%',
+        height: '20%',
+        marginBottom: 10,
+        marginTop: 50,
+    }
 });
 
 export default Register;

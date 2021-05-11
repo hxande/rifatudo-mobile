@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 const Terms = () => {
 
     return (
-        <Text style={styles.text}>
+        <View style={{padding: 20}}>
+            <Text style={styles.text}>
             Olá! Que bom que você chegou até aqui. É muito importante para nós que os usuários da OLX conheçam os Termos e Condições Gerais de Uso (T&C), pois trazemos informações necessárias para que usuários do site, sejam compradores, vendedores ou anunciantes, tenham uma boa experiência ao utilizar a plataforma da OLX. Usar o Site implica na compreensão, aceitação e vinculação automática a este T&C. Se Você não concordar com quaisquer condições previstas neste T&C, poderá deixar de utilizar o Site.
 
             Lembre-se que além deste T&C, algumas questões específicas devem seguir Termos e Condições específicos, chamados nesse documento de “Condições Particulares”. Consulte em caso de qualquer dúvida, elas são parte das nossas regras:
@@ -111,13 +112,16 @@ const Terms = () => {
 
             A OLX se orgulha de ser parceira dos usuários e trabalhamos para que o ambiente de negócios do Site seja sempre positivo. Se Você tiver qualquer divergência, pedimos que entre em contato nos nossos canais de atendimento, observados este T&C, as Condições Particulares e a legislação, buscaremos a solução consensual. Caso Você entenda por demandar a OLX na justiça, a demanda deverá ocorrer no Foro da Comarca de Rio de Janeiro, RJ ou do seu domicílio.
         </Text>
+        </View>
+        
     );
 };
 
 const styles = StyleSheet.create({
     text: {
         color: "white",
-        fontSize: 11
+        fontSize: 18,
+        textAlign: 'justify'
     },
 });
 

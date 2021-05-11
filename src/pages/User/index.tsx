@@ -1,7 +1,9 @@
 import React, { useContext } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AuthContext from '../../contexts/auth';
+
+const logo = require('../../../assets/splash.png')
 
 const User = () => {
     const { user, sair, signed } = useContext(AuthContext);
@@ -29,9 +31,18 @@ const User = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.logo}>{user?.name}</Text>
-            <Text style={styles.logo2}>{user?.email}</Text>
-            {signed ?
+
+            <Image
+                style={styles.tinyLogo}
+                source={logo}
+            />
+
+            {/* <Text style={styles.logo}>{user?.name}</Text>
+            <Text style={styles.logo2}>{user?.email}</Text> */}
+
+            <Text style={styles.logo}>Rafael Almeida</Text>
+            <Text style={styles.logo2}>rafaelffa1@hotmail.com</Text>
+            {!signed ?
                 <>
                     <TouchableOpacity style={styles.loginBtn} onPress={navigateToMyInformations}>
                         <Text style={styles.text}>Minhas Informações</Text>
@@ -65,40 +76,46 @@ const User = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#003f5c',
+        backgroundColor: '#380744',
         alignItems: 'center',
         justifyContent: 'center',
     },
 
     logo: {
         fontWeight: 'bold',
-        fontSize: 50,
-        color: '#fb5b5a',
-        marginBottom: 40
+        fontSize: 36,
+        color: 'rgb(187,112,25)',
+        marginBottom: 7
     },
 
     logo2: {
         fontWeight: 'bold',
         fontSize: 20,
-        color: '#fb5b5a',
+        color: 'rgb(187,130,45)',
         marginBottom: 40
     },
 
     text: {
         color: 'white',
-        fontSize: 11
+        fontSize: 18
     },
 
     loginBtn: {
         width: '80%',
-        backgroundColor: '#fb5b5a',
+        backgroundColor: "rgb(187,112,25)",
         borderRadius: 25,
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 40,
-        marginBottom: 10
+        marginTop: 10,
+        marginBottom: 5
     },
+    tinyLogo: {
+        width: '50%',
+        height: '20%',
+        marginBottom: 10,
+        marginTop: 50,
+    }
 });
 
 export default User;

@@ -1,7 +1,9 @@
 import React, { useState, useContext } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AuthContext from '../../contexts/auth';
+
+const logo = require('../../../assets/splash.png')
 
 const Home = () => {
     const { signed, user, logar } = useContext(AuthContext);
@@ -24,7 +26,12 @@ const Home = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.logo}>rifaTUDO</Text>
+
+            <Image
+                style={styles.tinyLogo}
+                source={logo}
+            />
+
             <View style={styles.inputView}>
                 <TextInput
                     style={styles.inputText}
@@ -68,7 +75,7 @@ const Home = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#003f5c',
+        backgroundColor: '#380744',
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -82,7 +89,7 @@ const styles = StyleSheet.create({
 
     inputView: {
         width: "80%",
-        backgroundColor: "#465881",
+        backgroundColor: "white",
         borderRadius: 25,
         height: 50,
         marginBottom: 20,
@@ -97,12 +104,12 @@ const styles = StyleSheet.create({
 
     text: {
         color: "white",
-        fontSize: 11
+        fontSize: 16
     },
 
     loginBtn: {
         width: "80%",
-        backgroundColor: "#fb5b5a",
+        backgroundColor: "rgb(187,112,25)",
         borderRadius: 25,
         height: 50,
         alignItems: "center",
@@ -110,6 +117,11 @@ const styles = StyleSheet.create({
         marginTop: 40,
         marginBottom: 10
     },
+    tinyLogo: {
+        width: '50%',
+        height: '20%',
+        marginBottom: 50,
+    }
 });
 
 export default Home;

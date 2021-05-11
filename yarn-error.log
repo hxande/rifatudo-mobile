@@ -1,30 +1,24 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/Cellar/yarn/1.22.0/libexec/bin/yarn.js add @types/expo-linking -D
+  /Users/rafaelalmeida/.nvm/versions/node/v12.16.1/bin/node /usr/local/Cellar/yarn/1.22.10/libexec/bin/yarn.js add react-native-elements
 
 PATH: 
-  /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/mongodb/bin:/Library/Java/JavaVirtualMachines/jdk-13.0.2.jdk/Contents/Home/bin:/Library/Apple/usr/bin:/Users/stefanini/Library/Android/sdk/tools:/Users/stefanini/Library/Android/sdk/platform-tools:/Users/stefanini/Library/Android/sdk/tools:/Users/stefanini/Library/Android/sdk/platform-tools
+  /Users/rafaelalmeida/.nvm/versions/node/v12.16.1/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/rafaelalmeida/.nvm/versions/node/v12.16.1/bin:/Users/rafaelalmeida/Library/Android/sdk/emulator:/Users/rafaelalmeida/Library/Android/sdk/tools:/Users/rafaelalmeida/Library/Android/sdk/tools/bin:/Users/rafaelalmeida/Library/Android/sdk/platform-tools:/Users/rafaelalmeida/Library/Android/sdk/emulator:/Users/rafaelalmeida/Library/Android/sdk/tools:/Users/rafaelalmeida/Library/Android/sdk/tools/bin:/Users/rafaelalmeida/Library/Android/sdk/platform-tools
 
 Yarn version: 
-  1.22.0
+  1.22.10
 
 Node version: 
-  12.14.1
+  12.16.1
 
 Platform: 
   darwin x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@types%2fexpo-linking: Not found
-      at Request.params.callback [as _callback] (/usr/local/Cellar/yarn/1.22.0/libexec/lib/cli.js:66975:18)
-      at Request.self.callback (/usr/local/Cellar/yarn/1.22.0/libexec/lib/cli.js:140727:22)
-      at Request.emit (events.js:223:5)
-      at Request.<anonymous> (/usr/local/Cellar/yarn/1.22.0/libexec/lib/cli.js:141699:10)
-      at Request.emit (events.js:223:5)
-      at IncomingMessage.<anonymous> (/usr/local/Cellar/yarn/1.22.0/libexec/lib/cli.js:141621:12)
-      at Object.onceWrapper (events.js:312:28)
-      at IncomingMessage.emit (events.js:228:7)
-      at endReadableNT (_stream_readable.js:1185:12)
-      at processTicksAndRejections (internal/process/task_queues.js:81:21)
+  Error: unable to get local issuer certificate
+      at TLSSocket.onConnectSecure (_tls_wrap.js:1473:34)
+      at TLSSocket.emit (events.js:311:20)
+      at TLSSocket._finishInit (_tls_wrap.js:916:8)
+      at TLSWrap.ssl.onhandshakedone (_tls_wrap.js:686:12)
 
 npm manifest: 
   {
