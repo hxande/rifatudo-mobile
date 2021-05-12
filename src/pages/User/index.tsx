@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AuthContext from '../../contexts/auth';
 
-const logo = require('../../../assets/splash.png')
+import logo from '../../../assets/splash.png';
 
 const User = () => {
     const { user, sair, signed } = useContext(AuthContext);
@@ -31,38 +31,35 @@ const User = () => {
 
     return (
         <View style={styles.container}>
-
             <Image
                 style={styles.tinyLogo}
                 source={logo}
             />
-
-            {/* <Text style={styles.logo}>{user?.name}</Text>
-            <Text style={styles.logo2}>{user?.email}</Text> */}
-
-            <Text style={styles.logo}>Rafael Almeida</Text>
-            <Text style={styles.logo2}>rafaelffa1@hotmail.com</Text>
-            {!signed ?
+            <Text style={styles.logo}>{user?.name}</Text>
+            <Text style={styles.logo2}>{user?.email}</Text>
+            {/* <Text style={styles.logo}>Rafael Almeida</Text>
+            <Text style={styles.logo2}>rafaelffa1@hotmail.com</Text> */}
+            {signed ?
                 <>
-                    <TouchableOpacity style={styles.loginBtn} onPress={navigateToMyInformations}>
+                    <TouchableOpacity style={styles.button} onPress={navigateToMyInformations}>
                         <Text style={styles.text}>Minhas Informações</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.loginBtn} onPress={navigateToMyRaffles}>
+                    <TouchableOpacity style={styles.button} onPress={navigateToMyRaffles}>
                         <Text style={styles.text}>Minhas Rifas</Text>
                     </TouchableOpacity>
                 </>
                 :
                 <>
-                    <TouchableOpacity style={styles.loginBtn} onPress={navigateToHome}>
+                    <TouchableOpacity style={styles.button} onPress={navigateToHome}>
                         <Text style={styles.text}>Entrar</Text>
                     </TouchableOpacity>
                 </>
             }
-            <TouchableOpacity style={styles.loginBtn} onPress={navigateToTermsConditions}>
+            <TouchableOpacity style={styles.button} onPress={navigateToTermsConditions}>
                 <Text style={styles.text}>Termos e Condições</Text>
             </TouchableOpacity>
             {signed ?
-                <TouchableOpacity style={styles.loginBtn} onPress={handleLogout}>
+                <TouchableOpacity style={styles.button} onPress={handleLogout}>
                     <Text style={styles.text}>SAIR</Text>
                 </TouchableOpacity>
                 :
@@ -79,6 +76,13 @@ const styles = StyleSheet.create({
         backgroundColor: '#380744',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+
+    tinyLogo: {
+        width: '50%',
+        height: '20%',
+        marginBottom: 10,
+        marginTop: 20,
     },
 
     logo: {
@@ -100,9 +104,9 @@ const styles = StyleSheet.create({
         fontSize: 18
     },
 
-    loginBtn: {
+    button: {
         width: '80%',
-        backgroundColor: "rgb(187,112,25)",
+        backgroundColor: 'rgb(187,112,25)',
         borderRadius: 25,
         height: 50,
         alignItems: 'center',
@@ -110,12 +114,6 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 5
     },
-    tinyLogo: {
-        width: '50%',
-        height: '20%',
-        marginBottom: 10,
-        marginTop: 50,
-    }
 });
 
 export default User;
