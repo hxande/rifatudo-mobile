@@ -145,6 +145,7 @@ const Raffles = () => {
                 <TextInput
                     style={styles.searchInput}
                     placeholder='Buscar'
+                    autoCapitalize='none'
                 />
                 <TouchableOpacity style={styles.filter} onPress={handleNavigateBack}>
                     <Icon style={{ fontSize: 30 }} name='filter' size={20} color='rgb(187,112,25)' />
@@ -235,9 +236,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginVertical: 5
+        marginVertical: 5,
     },
-
+    
     lotteryNumbersText: {
         marginRight: 5,
         fontSize: 18,
@@ -250,7 +251,7 @@ const styles = StyleSheet.create({
     },
 
     item: {
-        backgroundColor: '#fff',
+        backgroundColor: '#e0ebeb',
         borderWidth: 2,
         borderColor: '#eee',
         borderRadius: 8,
@@ -265,8 +266,7 @@ const styles = StyleSheet.create({
 
     itemInfoContainer: {
         marginLeft: 10,
-        justifyContent:
-            'space-between'
+        justifyContent: 'space-between',
     },
 
     itemTitle: {

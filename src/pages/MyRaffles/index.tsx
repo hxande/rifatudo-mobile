@@ -208,7 +208,7 @@ const MyRaffles = () => {
                 <Text style={styles.title}>Minhas Rifas</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                     <TouchableOpacity
-                        style={{ marginLeft: 5, backgroundColor: '#fb5b5a', height: 30, width: 80, marginBottom: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center' }}
+                        style={{ marginLeft: 5, backgroundColor: '#380744', height: 30, width: 80, marginBottom: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center' }}
                         onPress={handleHistory}
                     >
                         <Text style={{ color: '#fff' }}>Histórico</Text>
@@ -219,7 +219,7 @@ const MyRaffles = () => {
                         <Text style={{ color: 'black', fontSize: 20, fontWeight: '700' }}>R${total.toFixed(2)}</Text>
                     </View>
                     <TouchableOpacity
-                        style={{ marginRight: 5, backgroundColor: '#fb5b5a', height: 30, width: 80, marginBottom: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center' }}
+                        style={{ marginRight: 5, backgroundColor: '#380744', height: 30, width: 80, marginBottom: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center' }}
                         onPress={handleWithdraw}
                     >
                         <Text style={{ color: '#fff' }}>Sacar</Text>
@@ -248,7 +248,7 @@ const MyRaffles = () => {
                 !tabsRifas ?
                     <View style={{ flex: 1 }}>
                         <View style={{ flex: 2 }}>
-                            <Text style={{ color: '#fb5b5a', textAlign: 'center', fontSize: 30, marginVertical: 10 }}>Em Andamento</Text>
+                            <Text style={{ color: '#380744', textAlign: 'center', fontSize: 30, marginVertical: 10 }}>Em Andamento</Text>
                             <ScrollView style={{ flex: 1 }}>
                                 {
                                     myRaffles && myRaffles.map(raffle => {
@@ -261,7 +261,7 @@ const MyRaffles = () => {
                             </ScrollView>
                         </View>
                         <View style={{ flex: 2 }}>
-                            <Text style={{ color: '#fb5b5a', textAlign: 'center', fontSize: 30, marginVertical: 10 }}>Finalizadas</Text>
+                            <Text style={{ color: '#380744', textAlign: 'center', fontSize: 30, marginVertical: 10 }}>Finalizadas</Text>
                             <ScrollView style={{ flex: 1 }}>
                                 {
                                     myRaffles && myRaffles.map(raffle => {
@@ -292,7 +292,7 @@ const MyRaffles = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#003f5c',
+        backgroundColor: '#e0ebeb',
     },
 
     headerContainer: {
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     title: {
         fontWeight: 'bold',
         fontSize: 50,
-        color: '#fb5b5a',
+        color: '#380744',
         marginVertical: 20
     },
 

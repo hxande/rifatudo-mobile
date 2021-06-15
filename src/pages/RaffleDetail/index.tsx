@@ -149,11 +149,11 @@ const RaffleDetail = () => {
                 <View style={styles.detailContainer}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <TouchableOpacity onPress={handleNavigateBack}>
-                            <Icon name='arrow-left' size={20} color='#fb5b5a' />
+                            <Icon name='arrow-left' size={20} color='rgb(187,112,25)' />
                         </TouchableOpacity>
 
                         <TouchableOpacity onPress={onShare}>
-                            <Icon2 name='share-alt' size={20} color='#fb5b5a' />
+                            <Icon2 name='share-alt' size={20} color='rgb(187,112,25)' />
                         </TouchableOpacity>
                     </View>
 
@@ -232,11 +232,11 @@ const RaffleDetail = () => {
                             </View>
                             <View style={{ justifyContent: 'space-between', flexDirection: 'row', marginVertical: 10 }}>
                                 <View>
-                                    <Text style={{ fontSize: 16, color: '#fb5b5a' }}>Quantidade Total:</Text>
+                                    <Text style={{ fontSize: 16, color: '#380744' }}>Quantidade Total:</Text>
                                     <Text style={{ fontSize: 24, color: '#fb5b5a', fontWeight: 'bold' }}>{selectedQuotas.length}</Text>
                                 </View>
                                 <View>
-                                    <Text style={{ fontSize: 16, color: '#fb5b5a' }}>Preço:</Text>
+                                    <Text style={{ fontSize: 16, color: '#380744' }}>Preço:</Text>
                                     <Text style={{ fontSize: 24, color: '#fb5b5a', fontWeight: 'bold' }}>
                                         R${
                                             selectedQuotas.reduce((total, single) => +total + +single.value, 0)
@@ -261,6 +261,7 @@ const RaffleDetail = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#e0ebeb',
     },
 
     detailContainer: {
@@ -279,7 +280,7 @@ const styles = StyleSheet.create({
     },
 
     raffleHeader: {
-        color: '#322153',
+        color: '#380744',
         fontSize: 28,
         fontFamily: 'Ubuntu_700Bold',
         marginTop: 24,
@@ -290,7 +291,7 @@ const styles = StyleSheet.create({
     },
 
     fieldTitle: {
-        color: '#322153',
+        color: '#380744',
         fontFamily: 'Roboto_500Medium',
         fontSize: 16,
     },
@@ -299,7 +300,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto_400Regular',
         lineHeight: 24,
         marginTop: 8,
-        color: '#6c6c80',
+        color: 'rgb(187,112,25)',
     },
 
     item: {
@@ -336,12 +337,12 @@ const styles = StyleSheet.create({
 
     subtitleItemText: {
         fontSize: 16,
-        marginBottom: 5
+        marginBottom: 5,
     },
 
     buyButton: {
         marginTop: 8,
-        backgroundColor: '#fb5b5a',
+        backgroundColor: 'rgb(187,112,25)',
         height: 60,
         flexDirection: 'row',
         borderRadius: 10,
@@ -353,9 +354,9 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         textAlign: 'center',
-        color: '#FFF',
+        color: '#380744',
         fontFamily: 'Roboto_500Medium',
-        fontSize: 16,
+        fontSize: 24,
     },
 
     footer: {

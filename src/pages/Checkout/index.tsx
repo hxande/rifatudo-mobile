@@ -110,7 +110,8 @@ const Checkout = () => {
     }
 
     function calculatePrice() {
-        return total + (quotas.length * 0.25);
+        // + (quotas.length * 0.25)
+        return total;
     }
 
     function createDTO() {
@@ -128,7 +129,7 @@ const Checkout = () => {
     }
 
     function handleCopyPix() {
-        Clipboard.setString('32918736kjhsgch2892489720');
+        Clipboard.setString('44b647fd-c630-43dc-a7ab-b77fda977870');
         Alert.alert('Copiado!');
     }
 
@@ -165,7 +166,7 @@ const Checkout = () => {
             <ScrollView>
                 <View style={styles.detailContainer}>
                     <TouchableOpacity onPress={handleNavigateBack}>
-                        <Icon name='arrow-left' size={20} color='#fb5b5a' />
+                        <Icon name='arrow-left' size={20} color='#380744' />
                     </TouchableOpacity>
                     <Text style={styles.selectedItemstitle}>Números Selecionados</Text>
                     <View style={styles.selectedItemsContainer}>
@@ -198,10 +199,10 @@ const Checkout = () => {
                                 <Text style={styles.paymentItem}>Valor Unitário:</Text>
                                 <Text style={styles.paymentItem}>{(+cotas[0].valor).toFixed(2)}</Text>
                             </View> */}
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={styles.paymentItem}>Taxa Operacional:</Text>
                                 <Text style={styles.paymentItem}>{quotas.length * 0.25}</Text>
-                            </View>
+                            </View> */}
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={styles.paymentItem}>Valor Total:</Text>
                                 <Text style={styles.paymentItem}>{total + (quotas.length * 0.25)}</Text>
@@ -230,7 +231,7 @@ const Checkout = () => {
                                         <Text style={styles.pixInfo}>Chave PIX:</Text>
                                         <Text style={styles.pixInfo}>32918736kjhsgch2892489720</Text>
                                         <TouchableOpacity style={{ justifyContent: 'center', alignContent: 'center', marginRight: 10 }} onPress={handleCopyPix}>
-                                            <Icon name='copy' size={20} color='#fb5b5a' />
+                                            <Icon name='copy' size={20} color='#380744' />
                                         </TouchableOpacity>
                                     </View>
                                 </View>
@@ -240,7 +241,7 @@ const Checkout = () => {
                                     </RectButton>
                                     {image !== String(null)
                                         ? <Image source={{ uri: image }} style={styles.image} />
-                                        : <View style={styles.imageFake}><Text style={{ fontSize: 16, color: '#fb5b5a' }}>Imagem</Text></View>
+                                        : <View style={styles.imageFake}><Text style={{ fontSize: 16, color: '#380744' }}>Imagem</Text></View>
                                     }
                                 </View>
                             </>
@@ -262,6 +263,7 @@ const Checkout = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#e0ebeb',
     },
 
     detailContainer: {
@@ -275,6 +277,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginVertical: 10,
+        color: 'rgb(187,112,25)',
     },
 
     selectedItemsContainer: {
@@ -333,7 +336,7 @@ const styles = StyleSheet.create({
 
     buyButton: {
         marginTop: 8,
-        backgroundColor: '#34CB79',
+        backgroundColor: '#380744',
         height: 60,
         flexDirection: 'row',
         borderRadius: 10,
@@ -345,9 +348,9 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         textAlign: 'center',
-        color: '#FFF',
+        color: 'rgb(187,112,25)',
         fontFamily: 'Roboto_500Medium',
-        fontSize: 16,
+        fontSize: 24,
     },
 
     imageFake: {
@@ -359,7 +362,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 10,
         borderStyle: 'dashed',
-        borderColor: '#fb5b5a',
+        borderColor: '#380744',
     },
 
     imageContainer: {
@@ -371,7 +374,7 @@ const styles = StyleSheet.create({
     imagePicker: {
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: '#fb5b5a',
+        borderColor: '#380744',
         padding: 15,
         overflow: 'hidden',
     },
@@ -380,6 +383,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontFamily: 'Roboto_500Medium',
         fontSize: 18,
+        color: 'rgb(187,112,25)',
     },
 
     image: {
