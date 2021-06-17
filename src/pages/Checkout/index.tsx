@@ -154,7 +154,7 @@ const Checkout = () => {
             body: data,
         };
 
-        fetch(`https://rifatudo-backend.herokuapp.com/raffles/${id}/quotas/${quotasBuyed}/receipt`, config)
+        fetch(`http://18.214.1.138:3333/raffles/${id}/quotas/${quotasBuyed}/receipt`, config)
             .then((checkStatusAndGetJSONResponse) => {
                 console.log(checkStatusAndGetJSONResponse);
             })

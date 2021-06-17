@@ -169,7 +169,7 @@ const NewRaffle = () => {
             body: data,
         };
 
-        fetch(`https://rifatudo-backend.herokuapp.com/raffles/${id}/images/${num}`, config)
+        fetch(`http://18.214.1.138:3333/raffles/${id}/images/${num}`, config)
             .then((checkStatusAndGetJSONResponse) => {
                 console.log(checkStatusAndGetJSONResponse);
             })
