@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { ActivityIndicator, Image, View, Text, StyleSheet, TouchableOpacity, Linking, Dimensions, TextInput, FlatList, ListRenderItem, Pressable, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Carousel from 'react-native-snap-carousel';
 import { Feather as Icon } from '@expo/vector-icons';
 import IRaffle from '../../models/Raffle';
 import api from '../../services/api';
@@ -351,8 +350,7 @@ const Raffles = () => {
     ]);
 
     const [page, setPage] = useState<number>(1);
-    const [scrolled, setScrolled] = useState<boolean>(false);
-    const [endData, setEndData] = useState<boolean>(false);
+    const [loadingMore, setLoadingMore] = useState(true);
 
     useEffect(() => {
         Linking.getInitialURL().then(url => {
@@ -385,25 +383,33 @@ const Raffles = () => {
         getResults();
     }, []);
 
-    async function getMoreRaffles() {
-        if (!scrolled || endData) {
+    async function fetchRaffles() {
+        const { data } = await api.get(`/raffles/pages/${page}`);
+
+        if (!data) {
+            return setLoading(true);
+        }
+
+        if (page > 1) {
+            setRaffles(oldValue => [...oldValue!, ...data]);
+            // setFilteredPlants(oldValue => [...oldValue!, ...data]);
+        } else {
+            setRaffles(data);
+            // setFilteredPlants(data);
+        }
+
+        setLoading(false);
+        setLoadingMore(false);
+    }
+
+    function handleFetchMore(distance: number) {
+        if (distance < 1) {
             return;
         }
 
-        try {
-            const response = await api.get(`/raffles/pages/${page + 1}`);
-            if (response.data.length === 0) {
-                setEndData(true);
-            }
-            setPage(page + 1);
-            setRaffles([...raffles, ...response.data]);
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    function onScroll() {
-        setScrolled(true);
+        setLoadingMore(true);
+        setPage(oldValue => oldValue + 1);
+        fetchRaffles();
     }
 
     function handleNavigateBack() {
@@ -543,9 +549,10 @@ const Raffles = () => {
                 <TextInput
                     style={styles.searchInput}
                     placeholder='Buscar'
+                    autoCapitalize='none'
                 />
                 <TouchableOpacity style={styles.filter} onPress={handleNavigateBack}>
-                    <Icon style={{ fontSize: 30 }} name='filter' size={20} color='#fb5b5a' />
+                    <Icon style={{ fontSize: 30 }} name='filter' size={20} color='rgb(187,112,25)' />
                 </TouchableOpacity>
             </View>
 
@@ -559,12 +566,20 @@ const Raffles = () => {
                 /> */}
                 <FlatList
                     data={raffles}
-                    renderItem={renderItem}
                     keyExtractor={item => String(item.id)}
-                    onScroll={onScroll}
-                    onEndReached={getMoreRaffles}
                     ListHeaderComponent={headerListRaffles}
                     onEndReachedThreshold={0}
+                    renderItem={renderItem}
+                    showsVerticalScrollIndicator={false}
+                    onEndReachedThreshold={0.1}
+                    onEndReached={({ distanceFromEnd }) => {
+                        handleFetchMore(distanceFromEnd);
+                    }}
+                    ListFooterComponent={
+                        loadingMore
+                            ? <ActivityIndicator color='#380744' />
+                            : <></>
+                    }
                 />
             </View>
         </SafeAreaView>
@@ -575,9 +590,8 @@ const styles = StyleSheet.create({
 
     loadingContainer: {
         flex: 1,
-        justifyContent:
-            'center',
-        alignItems: 'center'
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 
     container: {
@@ -590,28 +604,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingLeft: 7
-    },
-
-    lotteryContainer: {
-        height: 'auto',
-        borderRadius: 10,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        padding: 5
-    },
-
-    lotteryInfoContainer: {
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start',
-        marginVertical: 5
-    },
-
-    lotteryNumbersText: {
-        marginRight: 5,
-        fontSize: 18,
-        fontWeight: 'bold',
-        backgroundColor: '#ffcc33'
     },
 
     searchInput: {
@@ -628,9 +620,30 @@ const styles = StyleSheet.create({
         marginRight: 20,
     },
 
+    lotteryContainer: {
+        height: 'auto',
+        borderRadius: 10,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        padding: 5
+    },
+
+    lotteryInfoContainer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        marginVertical: 5
+    },
+    
+    lotteryNumbersText: {
+        marginRight: 5,
+        fontSize: 18,
+        fontWeight: 'bold',
+        backgroundColor: '#ffcc33'
+    },
+
     itemsContainer: {
-        marginTop: 8,
-        marginBottom: 32,
+        flex: 1,
     },
 
     item: {
@@ -648,6 +661,11 @@ const styles = StyleSheet.create({
     image: {
         width: 120,
         height: 120
+    },
+
+    itemInfoContainer: {
+        marginLeft: 10,
+        justifyContent: 'space-between',
     },
 
     itemTitle: {

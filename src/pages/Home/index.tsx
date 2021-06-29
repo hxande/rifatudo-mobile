@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image } from 'reac
 import { useNavigation } from '@react-navigation/native';
 import AuthContext from '../../contexts/auth';
 
-const logo = require('../../../assets/splash.png')
+import logo from '../../../assets/splash.png';
 
 const Home = () => {
     const { signed, user, logar } = useContext(AuthContext);
@@ -26,12 +26,10 @@ const Home = () => {
 
     return (
         <View style={styles.container}>
-
             <Image
                 style={styles.tinyLogo}
                 source={logo}
             />
-
             <View style={styles.inputView}>
                 <TextInput
                     style={styles.inputText}
@@ -57,7 +55,7 @@ const Home = () => {
             <TouchableOpacity>
                 <Text style={styles.text}>Esqueceu a Senha?</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
+            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
                 <Text style={styles.text}>LOGIN</Text>
             </TouchableOpacity>
             <View style={{ flexDirection: 'row' }}>
@@ -81,42 +79,49 @@ const styles = StyleSheet.create({
     },
 
     logo: {
-        fontWeight: "bold",
+        fontWeight: 'bold',
         fontSize: 50,
-        color: "#fb5b5a",
+        color: '#fb5b5a',
         marginBottom: 40
     },
 
+    tinyLogo: {
+        width: '50%',
+        height: '20%',
+        marginBottom: 50,
+    },
+
     inputView: {
-        width: "80%",
-        backgroundColor: "white",
+        width: '80%',
+        backgroundColor: 'white',
         borderRadius: 25,
         height: 50,
         marginBottom: 20,
-        justifyContent: "center",
+        justifyContent: 'center',
         padding: 20
     },
 
     inputText: {
         height: 50,
-        color: "white"
+        color: 'black'
     },
 
     text: {
-        color: "white",
+        color: 'white',
         fontSize: 16
     },
 
-    loginBtn: {
-        width: "80%",
-        backgroundColor: "rgb(187,112,25)",
+    loginButton: {
+        width: '80%',
+        backgroundColor: 'rgb(187,112,25)',
         borderRadius: 25,
         height: 50,
-        alignItems: "center",
-        justifyContent: "center",
+        alignItems: 'center',
+        justifyContent: 'center',
         marginTop: 40,
         marginBottom: 10
     },
+    
     tinyLogo: {
         width: '50%',
         height: '20%',

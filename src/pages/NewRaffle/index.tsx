@@ -169,7 +169,7 @@ const NewRaffle = () => {
             body: data,
         };
 
-        fetch(`https://rifatudo-backend.herokuapp.com/raffles/${id}/images/${num}`, config)
+        fetch(`http://18.214.1.138:3333/raffles/${id}/images/${num}`, config)
             .then((checkStatusAndGetJSONResponse) => {
                 console.log(checkStatusAndGetJSONResponse);
             })
@@ -195,6 +195,7 @@ const NewRaffle = () => {
                 qttM < 0 ||
                 // qttWinners < 0 ||
                 price < 0 ||
+                price > 1000 ||
                 qttDays < 0
             ) {
                 return false;
@@ -235,17 +236,17 @@ const NewRaffle = () => {
                         <ScrollView horizontal showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20 }}>
                             {image1 !== String(null)
                                 ? <Image source={{ uri: image1 }} style={styles.image} />
-                                : <View style={styles.imageFake}><Text style={{ fontSize: 16, color: '#fb5b5a' }}>Imagem</Text></View>
+                                : <View style={styles.imageFake}><Text style={{ fontSize: 16, color: '#380744' }}>Imagem</Text></View>
                             }
 
                             {image2 !== String(null)
                                 ? <Image source={{ uri: image2 }} style={styles.image} />
-                                : <View style={styles.imageFake}><Text style={{ fontSize: 16, color: '#fb5b5a' }}>Imagem</Text></View>
+                                : <View style={styles.imageFake}><Text style={{ fontSize: 16, color: '#380744' }}>Imagem</Text></View>
                             }
 
                             {image3 !== String(null)
                                 ? <Image source={{ uri: image3 }} style={styles.image} />
-                                : <View style={styles.imageFake}><Text style={{ fontSize: 16, color: '#fb5b5a' }}>Imagem</Text></View>
+                                : <View style={styles.imageFake}><Text style={{ fontSize: 16, color: '#380744' }}>Imagem</Text></View>
                             }
                         </ScrollView>
                     </View>
@@ -354,7 +355,7 @@ const NewRaffle = () => {
                             autoCorrect={false}
                         /> */}
 
-                        <Text>Valor</Text>
+                        <Text>Valor (máx. R$1000,00)</Text>
                         <TextInput
                             style={styles.input}
                             placeholder='Valor'
@@ -409,7 +410,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 10,
         borderStyle: 'dashed',
-        borderColor: '#fb5b5a',
+        borderColor: '#380744',
     },
 
     imageContainer: {
@@ -420,7 +421,7 @@ const styles = StyleSheet.create({
     imagePicker: {
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: '#fb5b5a',
+        borderColor: '#380744',
         padding: 15,
         overflow: 'hidden',
     },
@@ -429,6 +430,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontFamily: 'Roboto_500Medium',
         fontSize: 18,
+        color: 'rgb(187,112,25)'
     },
 
     image: {
@@ -451,7 +453,7 @@ const styles = StyleSheet.create({
     },
 
     button: {
-        backgroundColor: '#fb5b5a',
+        backgroundColor: '#380744',
         height: 40,
         flexDirection: 'row',
         borderRadius: 10,

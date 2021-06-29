@@ -7,7 +7,8 @@ import { Dimensions } from 'react-native';
 import api from '../../services/api';
 import { cpfMask } from '../../utils/cpfMask';
 
-const logo = require('../../../assets/splash.png')
+import logo from '../../../assets/splash.png';
+
 interface IAndroidEvent {
     type: string;
     nativeEvent: {
@@ -110,117 +111,106 @@ const Register = () => {
     }
 
     return (
-        <SafeAreaView>
-            <ScrollView
-                contentContainerStyle={{ paddingBottom: 100, backgroundColor: '#330b41' }}
-            >
-                <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <ScrollView contentContainerStyle={styles.formView}>
+                <Image
+                    style={styles.tinyLogo}
+                    source={logo}
+                />
 
-                    <Image
-                        style={styles.tinyLogo}
-                        source={logo}
+                <TextInput editable={false} style={styles.header}>Cadastrar</TextInput>
+                <Animated.View style={[getAnimationStyle(), { alignSelf: 'stretch' }]}>
+                    <TextInput
+                        textContentType='emailAddress'
+                        style={styles.inputText}
+                        placeholder='E-mail'
+                        placeholderTextColor='#fff'
+                        value={username}
+                        onChangeText={validateEmail}
+                        autoCorrect={false}
                     />
-
-                    <TextInput editable={false} style={styles.header}>Cadastrar</TextInput>
-                    <Animated.View style={[getAnimationStyle(), { alignSelf: 'stretch' }]}>
-                        <TextInput
-                            textContentType='emailAddress'
-                            style={styles.inputText}
-                            placeholder='E-mail'
-                            placeholderTextColor='#fff'
-                            value={username}
-                            onChangeText={validateEmail}
-                            autoCorrect={false}
+                </Animated.View>
+                {fieldMessage.length > 0 ? <Text style={styles.validateText}>{fieldMessage}</Text> : <></>}
+                <TextInput
+                    textContentType='givenName'
+                    style={styles.inputText}
+                    placeholder='Nome'
+                    placeholderTextColor='#fff'
+                    value={first_name}
+                    onChangeText={setFirst_name}
+                />
+                <TextInput
+                    textContentType='familyName'
+                    style={styles.inputText}
+                    placeholder='Sobrenome'
+                    placeholderTextColor='#fff'
+                    value={surname}
+                    onChangeText={setSurname}
+                />
+                <TextInput
+                    style={styles.inputText}
+                    placeholder='CPF'
+                    placeholderTextColor='#fff'
+                    value={cpf}
+                    onChangeText={onChangeCPF}
+                />
+                <Text style={styles.dateTitleText}>Data de nascimento</Text>
+                {
+                    (show || Platform.OS === 'ios') && (
+                        <DateTimePicker
+                            style={[Platform.OS === 'ios' ? { height: 100 } : {}, { width: Dimensions.get('window').width - 40, backgroundColor: '#fff' }]}
+                            testID='dateTimePicker'
+                            value={birth}
+                            mode={'date'}
+                            is24Hour={true}
+                            display='default'
+                            onChange={onChangeDate}
+                            locale='pt-BR'
                         />
-                    </Animated.View>
-                    {fieldMessage.length > 0 ? <Text style={styles.validateText}>{fieldMessage}</Text> : <></>}
-                    <TextInput
-                        textContentType='givenName'
-                        style={styles.inputText}
-                        placeholder='Nome'
-                        placeholderTextColor='#fff'
-                        value={first_name}
-                        onChangeText={setFirst_name}
-                    />
-                    <TextInput
-                        textContentType='familyName'
-                        style={styles.inputText}
-                        placeholder='Sobrenome'
-                        placeholderTextColor='#fff'
-                        value={surname}
-                        onChangeText={setSurname}
-                    />
-                    <TextInput
-                        style={styles.inputText}
-                        placeholder='CPF'
-                        placeholderTextColor='#fff'
-                        value={cpf}
-                        onChangeText={onChangeCPF}
-                    />
-                    <Text style={styles.dateTitleText}>Data de nascimento</Text>
-                    {
-                        (show || Platform.OS === 'ios') && (
-                            <DateTimePicker
-                                style={[Platform.OS === 'ios' ? { height: 100 } : {}, { width: Dimensions.get('window').width - 40, backgroundColor: '#fff' }]}
-                                testID='dateTimePicker'
-                                value={birth}
-                                mode={'date'}
-                                is24Hour={true}
-                                display='default'
-                                onChange={onChangeDate}
-                                locale='pt-BR'
-                            />
-                        )
-                    }
-                    {
-                        Platform.OS === 'android' && (
-                            <TouchableOpacity onPress={() => setShow(true)}>
-                                <Text style={{ color: '#fff' }}>{new Date(birth).toLocaleDateString('pt-BR')}</Text>
-                            </TouchableOpacity>
-                        )
-                    }
-                    <TextInput
-                        style={{
-                            marginBottom: 30,
-                            color: '#fff',
-                            borderBottomColor: '#f8f8f8',
-                            borderBottomWidth: 1,
-                            alignSelf: 'stretch',
-                        }}
-                        editable={false}
-                    />
-                    <Picker
-                        style={[Platform.OS === 'android' ? { width: 200 } : { width: Dimensions.get('window').width }, { color: '#fff', height: 50, marginBottom: 20 }]}
-                        itemStyle={{ height: 50, width: Dimensions.get('window').width }}
-                        selectedValue={sex}
-                        onValueChange={(value, index) => {
-                            setSex(String(value));
-                        }}>
-                        <Picker.Item label='Masculino' color='white' value='0' />
-                        <Picker.Item label='Feminino' color='white' value='1' />
-                        <Picker.Item label='Outro' color='white' value='2' />
-                    </Picker>
-                    <TextInput
-                        textContentType='password'
-                        style={styles.inputText}
-                        secureTextEntry
-                        placeholder='Sua senha'
-                        placeholderTextColor='#fff'
-                        value={pass}
-                        onChangeText={setPass}
-                    />
-                    {
-                        fieldMessage.length > 0 ?
-                            <TouchableOpacity style={styles.registerBtn} onPress={triggerAnimation}>
-                                <Text style={styles.text}>REGISTRAR</Text>
-                            </TouchableOpacity>
-                            :
-                            <TouchableOpacity style={styles.registerBtn} onPress={handleRegisterUser}>
-                                <Text style={styles.text}>REGISTRAR</Text>
-                            </TouchableOpacity>
-                    }
-                </View>
+                    )
+                }
+                {
+                    Platform.OS === 'android' && (
+                        <TouchableOpacity onPress={() => setShow(true)}>
+                            <Text style={{ color: '#fff' }}>{new Date(birth).toLocaleDateString('pt-BR')}</Text>
+                        </TouchableOpacity>
+                    )
+                }
+                <TextInput
+                    style={styles.line}
+                    editable={false}
+                />
+                <Picker
+                    style={[Platform.OS === 'android' ? { width: 200 } : { width: Dimensions.get('window').width }, { color: '#fff', height: 50, marginBottom: 20 }]}
+                    itemStyle={{ height: 50, width: Dimensions.get('window').width }}
+                    selectedValue={sex}
+                    onValueChange={(value, index) => {
+                        setSex(String(value));
+                    }}>
+                    <Picker.Item label='Masculino' color='white' value='0' />
+                    <Picker.Item label='Feminino' color='white' value='1' />
+                    <Picker.Item label='Outro' color='white' value='2' />
+                </Picker>
+                <TextInput
+                    textContentType='password'
+                    style={styles.inputText}
+                    secureTextEntry
+                    placeholder='Sua senha'
+                    placeholderTextColor='#fff'
+                    value={pass}
+                    onChangeText={setPass}
+                />
             </ScrollView>
+            {
+                fieldMessage.length > 0 ?
+                    <TouchableOpacity style={styles.registerButton} onPress={triggerAnimation}>
+                        <Text style={styles.text}>REGISTRAR</Text>
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity style={styles.registerButton} onPress={handleRegisterUser}>
+                        <Text style={styles.text}>REGISTRAR</Text>
+                    </TouchableOpacity>
+            }
         </SafeAreaView>
     );
 };
@@ -229,11 +219,20 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#380744',
+    },
+
+    formView: {
         alignItems: 'center',
-        justifyContent: 'center',
         paddingHorizontal: 20,
-        paddingVertical: 30,
-        transform: [{ translateX: 0 }]
+        paddingBottom: 120,
+        // transform: [{ translateX: 0 }]
+    },
+
+    tinyLogo: {
+        width: '50%',
+        height: '20%',
+        marginBottom: 10,
+        marginTop: 20,
     },
 
     header: {
@@ -244,6 +243,10 @@ const styles = StyleSheet.create({
         borderBottomColor: '#fb5b5a',
         borderBottomWidth: 1,
         alignSelf: 'stretch',
+    },
+
+    validateText: {
+        color: '#fb5b5a',
     },
 
     inputText: {
@@ -261,31 +264,29 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
     },
 
+    line: {
+        marginBottom: 30,
+        color: '#fff',
+        borderBottomColor: '#f8f8f8',
+        borderBottomWidth: 1,
+        alignSelf: 'stretch',
+    },
+
     text: {
-        color: "white",
+        color: 'white',
         fontSize: 16
     },
 
-    validateText: {
-        color: '#fb5b5a',
-    },
-
-    registerBtn: {
-        width: "80%",
-        backgroundColor: "rgb(187,112,25)",
+    registerButton: {
+        backgroundColor: 'rgb(187,112,25)',
         borderRadius: 25,
         height: 50,
-        alignItems: "center",
-        justifyContent: "center",
+        alignItems: 'center',
+        justifyContent: 'center',
         marginTop: 40,
-        marginBottom: 10
+        marginHorizontal: 20,
+        marginBottom: 20
     },
-    tinyLogo: {
-        width: '50%',
-        height: '20%',
-        marginBottom: 10,
-        marginTop: 50,
-    }
 });
 
 export default Register;
