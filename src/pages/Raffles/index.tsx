@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ActivityIndicator, Image, View, Text, StyleSheet, TouchableOpacity, Linking, Dimensions, TextInput, FlatList, ListRenderItem, Pressable, StatusBar } from 'react-native';
+import ShimmerPlaceholder from 'react-native-shimmer-placeholder';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather as Icon } from '@expo/vector-icons';
@@ -363,14 +364,14 @@ const Raffles = () => {
         async function getRifas() {
             try {
                 const response = await api.get(`/raffles/pages/${page}`);
-                setRaffles(response.data);
+                console.error('teste');
+
+                // setRaffles(response.data);
                 setLoading(false);
             } catch (error) {
                 console.log(error);
             }
         }
-
-        // getRifas();
 
         async function getResults() {
             try {
@@ -382,6 +383,7 @@ const Raffles = () => {
         }
         getResults();
     }, []);
+
 
     async function fetchRaffles() {
         const { data } = await api.get(`/raffles/pages/${page}`);
@@ -534,17 +536,8 @@ const Raffles = () => {
         </View>
     );
 
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size='large' color='#666' />
-            </View>
-        );
-    }
-
     return (
         <SafeAreaView style={styles.container}>
-
             <View style={styles.searchContainer}>
                 <TextInput
                     style={styles.searchInput}
@@ -556,32 +549,41 @@ const Raffles = () => {
                 </TouchableOpacity>
             </View>
 
-            <View style={styles.itemsContainer}>
-                {/* <Carousel
-                    data={raffles}
-                    renderItem={renderItem}
-                    sliderWidth={400}
-                    itemWidth={300}
-                    layout={'tinder'} layoutCardOffset={`9`}
-                /> */}
-                <FlatList
-                    data={raffles}
-                    keyExtractor={item => String(item.id)}
-                    ListHeaderComponent={headerListRaffles}
-                    onEndReachedThreshold={0}
-                    renderItem={renderItem}
-                    showsVerticalScrollIndicator={false}
-                    onEndReachedThreshold={0.1}
-                    onEndReached={({ distanceFromEnd }) => {
-                        handleFetchMore(distanceFromEnd);
-                    }}
-                    ListFooterComponent={
-                        loadingMore
-                            ? <ActivityIndicator color='#380744' />
-                            : <></>
-                    }
-                />
-            </View>
+            {
+                loading ?
+
+                    <View>
+                        <ShimmerPlaceholder style={{ borderRadius: 20, width: '90%', margin: 20, marginBottom: 0, height: 200 }} />
+                        <ShimmerPlaceholder style={{ borderRadius: 20, width: '90%', margin: 20, marginBottom: 0, height: 200 }} />
+                        <ShimmerPlaceholder style={{ borderRadius: 20, width: '90%', margin: 20, marginBottom: 0, height: 200 }} />
+                    </View>
+
+
+                    :
+                    <View style={styles.itemsContainer}>
+
+                        <FlatList
+                            data={raffles}
+                            keyExtractor={item => String(item.id)}
+                            ListHeaderComponent={headerListRaffles}
+                            onEndReachedThreshold={0}
+                            renderItem={renderItem}
+                            showsVerticalScrollIndicator={false}
+                            onEndReachedThreshold={0.1}
+                            onEndReached={({ distanceFromEnd }) => {
+                                handleFetchMore(distanceFromEnd);
+                            }}
+                            ListFooterComponent={
+                                loadingMore
+                                    ? <ActivityIndicator color='#380744' />
+                                    : <></>
+                            }
+                        />
+
+                    </View>
+            }
+
+
         </SafeAreaView>
     );
 };
@@ -589,7 +591,7 @@ const Raffles = () => {
 const styles = StyleSheet.create({
 
     loadingContainer: {
-        flex: 1,
+        width: '100%',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -634,7 +636,7 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         marginVertical: 5
     },
-    
+
     lotteryNumbersText: {
         marginRight: 5,
         fontSize: 18,
@@ -656,6 +658,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         padding: 10,
         height: 'auto'
+    },
+
+    itemLoading: {
+        height: 50,
+        width: 20,
+        margin: 10,
+        marginLeft: 18,
+        borderRadius: 10
     },
 
     image: {
