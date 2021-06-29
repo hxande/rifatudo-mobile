@@ -35,7 +35,7 @@ const Home = () => {
             <View style={styles.inputView}>
                 <TextInput
                     style={styles.inputText}
-                    placeholder="E-mail..."
+                    placeholder="E-mail"
                     placeholderTextColor="#003f5c"
                     value={username}
                     onChangeText={setUsername}
@@ -46,7 +46,7 @@ const Home = () => {
             <View style={styles.inputView}>
                 <TextInput
                     style={styles.inputText}
-                    placeholder='Senha...'
+                    placeholder='Senha'
                     placeholderTextColor="#003f5c"
                     value={password}
                     onChangeText={setPassword}
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     tinyLogo: {
         width: '50%',
         height: '20%',
-        marginBottom: 50,
+        marginBottom: 50
     }
 });
 

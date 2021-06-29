@@ -11,7 +11,7 @@ import Register from './pages/Register';
 import RoutesTab from './routes-tab';
 
 const AppStack = createStackNavigator();
-const prefix = Linking.createURL('/', { scheme: 'rifatudo' });
+const prefix = Linking.makeUrl('/', { scheme: 'rifatudo' });
 const config = {
     screens: {
         Home: 'home',

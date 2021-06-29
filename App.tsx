@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { AppLoading } from 'expo';
 import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto';
 import { Ubuntu_700Bold, useFonts } from '@expo-google-fonts/ubuntu';
@@ -20,7 +20,8 @@ export default function App() {
 
   return (
     <>
-      <StatusBar barStyle='dark-content' backgroundColor='transparent' translucent />
+      {/* <StatusBar barStyle='light-content' backgroundColor='#8807a9' /> */}
+      <StatusBar  style="light" />
       <AuthProvider>
         <Routes />
       </AuthProvider>
